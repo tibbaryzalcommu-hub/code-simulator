@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Redeem Code Simulator (Sandbox)</title>
+<style>
+  :root{
+    --bg:#0f1420; --panel:#161d2e; --panel2:#1d2740; --border:#2a3552;
+    --text:#e7ecf7; --muted:#93a0bd; --accent:#5b8def; --accent2:#7c6bf0;
+    --green:#3ecf8e; --red:#f0637a; --amber:#f2b84b;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       background:var(--bg);color:var(--text);line-height:1.5;}
+  .wrap{max-width:1180px;margin:0 auto;padding:24px 20px 80px;}
+  header.top{padding:18px 0 6px;border-bottom:1px solid var(--border);margin-bottom:18px;}
+  header.top h1{font-size:20px;margin:0 0 4px;display:flex;align-items:center;gap:8px;}
+  header.top p{margin:0;color:var(--muted);font-size:13.5px;}
+  .badge-sandbox{background:var(--amber);color:#221a00;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;letter-spacing:.03em;}
+
+  nav.tabs{display:flex;gap:6px;margin-bottom:20px;border-bottom:1px solid var(--border);}
+  nav.tabs button{background:none;border:none;color:var(--muted);font-size:14.5px;font-weight:600;
+       padding:10px 16px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;}
+  nav.tabs button.active{color:var(--text);border-bottom-color:var(--accent);}
+  nav.tabs button:hover{color:var(--text);}
+
+  .panel{display:none;}
+  .panel.active{display:block;}
+
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:16px;}
+  .card h2{font-size:15px;margin:0 0 12px;}
+  .card h3{font-size:13px;margin:0 0 8px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media (max-width:820px){.grid2{grid-template-columns:1fr;}}
+
+  label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--text);}
+  .hint{font-size:12px;color:var(--muted);margin-top:4px;}
+  input[type=text],input[type=number],input[type=datetime-local],select,textarea{
+    width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--text);
+    padding:9px 11px;border-radius:8px;font-size:14px;font-family:inherit;
+  }
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);}
+  input:disabled,select:disabled{opacity:.4;cursor:not-allowed;}
+  .field{margin-bottom:14px;}
+
+  .radio-card{display:flex;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;
+      margin-bottom:8px;cursor:pointer;background:var(--panel2);}
+  .radio-card.disabled{opacity:.4;cursor:not-allowed;}
+  .radio-card input{margin-top:3px;width:auto;}
+  .radio-card .rc-text b{display:block;font-size:13.5px;}
+  .radio-card .rc-text span{font-size:12.5px;color:var(--muted);}
+  .radio-card.selected{border-color:var(--accent);background:rgba(91,141,239,.08);}
+
+  button.btn{background:var(--accent);color:#fff;border:none;padding:10px 18px;border-radius:8px;
+      font-size:14px;font-weight:700;cursor:pointer;}
+  button.btn:hover{filter:brightness(1.08);}
+  button.btn:disabled{background:#3a4560;color:#7c88a6;cursor:not-allowed;}
+  button.btn.secondary{background:var(--panel2);border:1px solid var(--border);color:var(--text);}
+  button.btn.ghost{background:none;border:1px solid var(--border);color:var(--muted);padding:6px 12px;font-size:12.5px;}
+  button.btn.small{padding:6px 12px;font-size:12.5px;}
+  button.btn.danger{background:var(--red);}
+
+  .warn-banner{background:rgba(242,184,75,.12);border:1px solid rgba(242,184,75,.4);color:#f2b84b;
+      padding:10px 12px;border-radius:8px;font-size:13px;margin-bottom:14px;}
+  .error-text{color:var(--red);font-size:12.5px;margin-top:6px;}
+  .total-box{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin:10px 0;}
+  .total-box .num{font-size:22px;font-weight:800;}
+  .total-box.over{border-color:var(--red);}
+  .total-box .over-text{color:var(--red);font-size:12.5px;margin-top:4px;font-weight:600;}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--border);}
+  th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.03em;}
+  code.pill{background:var(--panel2);border:1px solid var(--border);padding:2px 7px;border-radius:6px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;}
+
+  .status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;}
+  .status-available{background:var(--green);}
+  .status-used{background:var(--red);}
+
+  .set-block{border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:10px;background:var(--panel2);}
+  .set-block h4{margin:0 0 8px;font-size:13px;}
+  details.set-block{padding:0;}
+  details.set-block summary{cursor:pointer;font-size:13px;font-weight:600;padding:10px 12px;list-style:revert;user-select:none;}
+  details.set-block summary:hover{color:var(--accent);}
+  details.set-block .code-chip-row{padding:0 12px 12px;}
+  details.set-block .more-note{padding:0 12px 10px;margin-top:0;}
+  .code-chip-row{display:flex;flex-wrap:wrap;gap:6px;}
+  .code-chip{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;padding:3px 7px;border-radius:6px;
+      border:1px solid var(--border);background:var(--panel);}
+  .code-chip.used{text-decoration:line-through;color:var(--muted);border-color:var(--red);}
+  .more-note{font-size:12px;color:var(--muted);margin-top:6px;font-style:italic;}
+
+  .summary-line{font-size:13px;margin:3px 0;}
+  .summary-line b{color:var(--text);}
+  .summary-line span.muted{color:var(--muted);}
+
+  .user-tabs{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:14px;}
+  .user-tab{display:flex;align-items:center;gap:6px;background:var(--panel2);border:1px solid var(--border);
+      border-radius:8px;padding:6px 6px 6px 12px;cursor:pointer;font-size:13px;}
+  .user-tab.active{border-color:var(--accent);background:rgba(91,141,239,.1);}
+  .user-tab .name-span{font-size:13px;padding:2px;white-space:nowrap;}
+  .user-tab input.rename{background:var(--panel);border:1px solid var(--accent);border-radius:5px;color:var(--text);font-size:13px;width:90px;padding:2px 4px;}
+  .user-tab .edit-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;padding:2px 3px;opacity:.7;}
+  .user-tab .edit-btn:hover{color:var(--accent);opacity:1;}
+  .user-tab .x{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:2px 5px;}
+  .user-tab .x:hover{color:var(--red);}
+
+  .redeem-row{display:flex;gap:8px;margin-bottom:10px;}
+  .redeem-row input{flex:1;}
+
+  .result-box{padding:12px 14px;border-radius:8px;font-size:13.5px;margin-bottom:14px;border:1px solid;}
+  .result-success{background:rgba(62,207,142,.1);border-color:var(--green);color:#3ecf8e;}
+  .result-error{background:rgba(240,99,122,.1);border-color:var(--red);color:#f0637a;}
+
+  .empty-state{color:var(--muted);font-size:13.5px;padding:20px;text-align:center;}
+  .flex-between{display:flex;justify-content:space-between;align-items:center;}
+  footer.note{margin-top:24px;color:var(--muted);font-size:12px;text-align:center;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <h1>🎮 Redeem Code Simulator <span class="badge-sandbox">SANDBOX — NOT REAL CODES</span></h1>
+    <p>Practice requesting and redeeming in-game codes exactly like our backend would enforce it. Nothing here touches the real system.</p>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="generate">1. Code Generation Simulator</button>
+    <button class="tab-btn" data-tab="redeem">2. Code Redemption Simulator</button>
+  </nav>
+
+  <!-- ===================== GENERATE PANEL ===================== -->
+  <section id="panel-generate" class="panel active">
+
+    <div class="card">
+      <h2>Step 1 — What kind of code is this?</h2>
+      <div class="grid2">
+        <label class="radio-card" id="typeCardUnique">
+          <input type="radio" name="codeType" value="unique" checked>
+          <span class="rc-text"><b>Unique Code</b><span>Server-generated, 12-character codes. Each individual code can only ever be used once.</span></span>
+        </label>
+        <label class="radio-card" id="typeCardMaster">
+          <input type="radio" name="codeType" value="master">
+          <span class="rc-text"><b>Master Code</b><span>One named code everyone types to redeem. Names can never repeat across any server, ever.</span></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- UNIQUE CODE FORM -->
+    <div class="card" id="uniqueForm">
+      <h2>Unique Code Settings</h2>
+
+      <h3>Additional Condition A — reuse within a set</h3>
+      <label class="radio-card selected" id="toggleA-repeatable">
+        <input type="radio" name="toggleA" value="repeatable" checked>
+        <span class="rc-text"><b>Can be repeated (เติมซ้ำได้)</b><span>If one user gets a whole list of codes from this set, they can redeem all of them and get a reward each time.</span></span>
+      </label>
+      <label class="radio-card" id="toggleA-unrepeatable">
+        <input type="radio" name="toggleA" value="unrepeatable">
+        <span class="rc-text"><b>Cannot be repeated (เติมซ้ำไม่ได้)</b><span>Even if a user has several codes from this set, they only get one reward — from the first code they redeem. Further attempts show an error.</span></span>
+      </label>
+
+      <h3 style="margin-top:16px;">Additional Condition B — reuse across sets</h3>
+      <label class="radio-card" id="toggleB-once">
+        <input type="radio" name="toggleB" value="oncePerSet" checked>
+        <span class="rc-text"><b>Users can use code once per set (เติมข้ามได้)</b><span>Max redemptions per user = number of sets. E.g. with sets A and B, a user can redeem once from A <i>and</i> once from B.</span></span>
+      </label>
+      <label class="radio-card" id="toggleB-never">
+        <input type="radio" name="toggleB" value="noCross">
+        <span class="rc-text"><b>Cannot be repeated even across sets (เติมข้ามไม่ได้)</b><span>True unrepeatable — a user can redeem only once from this entire generation, no matter how many sets exist.</span></span>
+      </label>
+      <p class="hint" id="toggleB-note" style="display:none;">Condition B doesn't apply here — "Can be repeated" already means unlimited redemptions within a set, so there's nothing left to restrict across sets.</p>
+
+      <h3 style="margin-top:16px;">Amount</h3>
+      <div class="grid2">
+        <div class="field">
+          <label>Number of codes per set</label>
+          <input type="number" id="codesPerSet" min="1" value="100">
+        </div>
+        <div class="field">
+          <label>Number of sets</label>
+          <input type="number" id="numberOfSets" min="1" value="1">
+        </div>
+      </div>
+      <div class="total-box" id="totalBox">
+        <div>Total codes to request from the backend team</div>
+        <div class="num" id="totalNum">10</div>
+        <div class="hint">We can't generate more than 10,000 unique codes in one request.</div>
+        <div class="over-text" id="overText" style="display:none;">⚠ This exceeds the 10,000 code limit. Please lower the amounts before generating.</div>
+      </div>
+      <p class="hint">This sandbox only visually generates up to <b>100 codes per set</b> and <b>10 sets</b> for performance — the rest are represented as "...and XXX more" so it stays fast, even though your real request can go up to 10,000.</p>
+    </div>
+
+    <!-- MASTER CODE FORM -->
+    <div class="card" id="masterForm" style="display:none;">
+      <h2>Master Code Settings</h2>
+      <div class="warn-banner">⚠ Master Code names can never repeat — across ANY server, forever. If the name you want is already taken, our team will contact you to pick another.</div>
+      <div class="field">
+        <label>Master code name</label>
+        <input type="text" id="masterName" placeholder="e.g. CATDOG">
+        <p class="hint">Not case-sensitive when players redeem it (CATDOG = catdog = CatDog).</p>
+      </div>
+      <h3>Redemption limit</h3>
+      <label class="radio-card selected" id="master-unlimited">
+        <input type="radio" name="masterLimit" value="unlimited" checked>
+        <span class="rc-text"><b>Unlimited</b><span>Any number of unique players can redeem this code (once each).</span></span>
+      </label>
+      <label class="radio-card" id="master-limited">
+        <input type="radio" name="masterLimit" value="limited">
+        <span class="rc-text"><b>Limited</b><span>Only the first N unique players to redeem get the reward. This is a global cap shared by everyone.</span></span>
+      </label>
+      <div class="field" id="masterCapField" style="display:none;max-width:220px;">
+        <label>Redemption cap</label>
+        <input type="number" id="masterCap" min="1" value="100">
+      </div>
+    </div>
+
+    <!-- SHARED FIELDS -->
+    <div class="card">
+      <h2>Step 2 — Server & Reward</h2>
+      <div class="grid2">
+        <div class="field">
+          <label>Server</label>
+          <select id="serverSelect">
+            <option>M-TH</option>
+            <option>M-SEA</option>
+            <option>PC-TH</option>
+            <option>PC-SEA</option>
+          </select>
+          <p class="hint">Reference only in this sandbox — not enforced during redemption.</p>
+        </div>
+        <div class="field">
+          <label>Reward description</label>
+          <input type="text" id="rewardDesc" placeholder="e.g. HP Potion (Lv.3) x100">
+          <p class="hint">Everyone who successfully redeems from this generation gets the same reward.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Step 3 — Activation & Expiration</h2>
+      <div class="grid2">
+        <div class="field">
+          <label>Start / Activation date</label>
+          <input type="datetime-local" id="startDate" step="1">
+        </div>
+        <div class="field">
+          <label>End / Expiration date</label>
+          <input type="datetime-local" id="endDate" step="1">
+        </div>
+      </div>
+      <p class="hint">Every real code request needs an expiration date — permanent codes aren't allowed. These fields are for your request record only; this sandbox does not enforce them during redemption.</p>
+      <p class="hint">Want a code that effectively never expires? We don't do "permanent" — instead, set the expiration date 10 years in the future and we'll treat it as permanent for practical purposes.</p>
+      <p class="error-text" id="dateError" style="display:none;"></p>
+    </div>
+
+    <div class="card">
+      <div class="flex-between">
+        <div>
+          <p class="error-text" id="genError" style="display:none;"></p>
+        </div>
+        <button class="btn" id="generateBtn">Generate fake codes →</button>
+      </div>
+    </div>
+
+    <div class="card" id="generatedResult" style="display:none;"></div>
+
+  </section>
+
+  <!-- ===================== REDEEM PANEL ===================== -->
+  <section id="panel-redeem" class="panel">
+
+    <div class="card" id="noGenNotice">
+      <p class="empty-state">No code generation yet. Head to the Generation tab first and hit "Generate fake codes."</p>
+    </div>
+
+    <div id="redeemContent" style="display:none;">
+      <div class="card">
+        <div class="flex-between" style="margin-bottom:10px;">
+          <h2 style="margin:0;">Simulated Players</h2>
+          <button class="btn small secondary" id="addUserBtn">+ Add user</button>
+        </div>
+        <div class="user-tabs" id="userTabs"></div>
+      </div>
+
+      <div class="grid2">
+        <div>
+          <div class="card" id="activeGenSummary"></div>
+          <div class="card">
+            <h2>Redeem a code</h2>
+            <div class="redeem-row">
+              <input type="text" id="redeemInput" placeholder="Type the code here...">
+              <button class="btn" id="redeemBtn">Redeem</button>
+            </div>
+            <div id="resultArea"></div>
+            <h3>This player's redemption history</h3>
+            <div id="userHistory"></div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <h2>Live code pool</h2>
+            <div id="codePool"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <footer class="note">Internal sandbox tool · fake codes only · generated codes reset when this page reloads</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------------------------------------------------------------
+  // STATE
+  // ---------------------------------------------------------------
+  let currentGeneration = null;   // the single active generation (Unique or Master)
+  let users = [];                 // {id, name, redemptions:[{generationId, setIndex, codeLabel, reward, timestamp}]}
+  let activeUserId = null;
+  let uidCounter = 1;
+
+  function uid(prefix){ return prefix + (uidCounter++); }
+
+  // ---------------------------------------------------------------
+  // TAB NAV
+  // ---------------------------------------------------------------
+  document.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+      if(btn.dataset.tab==='redeem') renderRedeemTab();
+    });
+  });
+
+  // ---------------------------------------------------------------
+  // GENERATE TAB — form wiring
+  // ---------------------------------------------------------------
+  const uniqueForm = document.getElementById('uniqueForm');
+  const masterForm = document.getElementById('masterForm');
+
+  document.querySelectorAll('input[name=codeType]').forEach(r=>{
+    r.addEventListener('change', ()=>{
+      const isUnique = document.querySelector('input[name=codeType]:checked').value === 'unique';
+      uniqueForm.style.display = isUnique ? '' : 'none';
+      masterForm.style.display = isUnique ? 'none' : '';
+      updateRadioCardStyles();
+    });
+  });
+
+  function updateRadioCardStyles(){
+    document.querySelectorAll('.radio-card').forEach(card=>{
+      const input = card.querySelector('input[type=radio]');
+      if(!input) return;
+      card.classList.toggle('selected', input.checked && !input.disabled);
+    });
+  }
+  document.querySelectorAll('.radio-card input[type=radio]').forEach(inp=>{
+    inp.addEventListener('change', updateRadioCardStyles);
+  });
+
+  // Toggle A -> disable Toggle B when repeatable
+  const toggleBInputs = document.querySelectorAll('input[name=toggleB]');
+  function refreshToggleBState(){
+    const a = document.querySelector('input[name=toggleA]:checked').value;
+    const disable = (a === 'repeatable');
+    toggleBInputs.forEach(inp=>{
+      inp.disabled = disable;
+      inp.closest('.radio-card').classList.toggle('disabled', disable);
+    });
+    document.getElementById('toggleB-note').style.display = disable ? '' : 'none';
+    updateRadioCardStyles();
+  }
+  document.querySelectorAll('input[name=toggleA]').forEach(r=> r.addEventListener('change', refreshToggleBState));
+  refreshToggleBState();
+
+  // Master limit type -> show cap field
+  document.querySelectorAll('input[name=masterLimit]').forEach(r=>{
+    r.addEventListener('change', ()=>{
+      const limited = document.querySelector('input[name=masterLimit]:checked').value === 'limited';
+      document.getElementById('masterCapField').style.display = limited ? '' : 'none';
+      updateRadioCardStyles();
+    });
+  });
+
+  // Total codes live calc
+  const codesPerSetInput = document.getElementById('codesPerSet');
+  const numberOfSetsInput = document.getElementById('numberOfSets');
+  const totalBox = document.getElementById('totalBox');
+  const totalNum = document.getElementById('totalNum');
+  const overText = document.getElementById('overText');
+
+  function refreshTotal(){
+    const cps = Math.max(0, parseInt(codesPerSetInput.value,10) || 0);
+    const nos = Math.max(0, parseInt(numberOfSetsInput.value,10) || 0);
+    const total = cps * nos;
+    totalNum.textContent = total.toLocaleString();
+    const over = total > 10000;
+    totalBox.classList.toggle('over', over);
+    overText.style.display = over ? '' : 'none';
+    return {cps, nos, total, over};
+  }
+  codesPerSetInput.addEventListener('input', refreshTotal);
+  numberOfSetsInput.addEventListener('input', refreshTotal);
+  refreshTotal();
+
+  // Default dates: start = now, end = +7 days
+  function toLocalInputValue(d){
+    const pad = n => String(n).padStart(2,'0');
+    return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
+  }
+  const now = new Date();
+  const weekLater = new Date(now.getTime() + 7*24*3600*1000);
+  document.getElementById('startDate').value = toLocalInputValue(now);
+  document.getElementById('endDate').value = toLocalInputValue(weekLater);
+
+  function formatDisplayDate(inputValue){
+    if(!inputValue) return '';
+    return inputValue.replace('T',' ');
+  }
+
+  // ---------------------------------------------------------------
+  // GENERATE BUTTON
+  // ---------------------------------------------------------------
+  document.getElementById('generateBtn').addEventListener('click', ()=>{
+    const genErrorEl = document.getElementById('genError');
+    const dateErrorEl = document.getElementById('dateError');
+    genErrorEl.style.display='none';
+    dateErrorEl.style.display='none';
+
+    const type = document.querySelector('input[name=codeType]:checked').value;
+    const server = document.getElementById('serverSelect').value;
+    const reward = document.getElementById('rewardDesc').value.trim() || 'Sample Reward';
+    const startVal = document.getElementById('startDate').value;
+    const endVal = document.getElementById('endDate').value;
+
+    if(!startVal || !endVal){
+      dateErrorEl.textContent = 'Please set both an activation and expiration date.';
+      dateErrorEl.style.display='';
+      return;
+    }
+    if(new Date(endVal) <= new Date(startVal)){
+      dateErrorEl.textContent = 'Expiration date must be after the activation date.';
+      dateErrorEl.style.display='';
+      return;
+    }
+
+    if(type === 'unique'){
+      const {cps, nos, total, over} = refreshTotal();
+      if(cps < 1 || nos < 1){
+        genErrorEl.textContent = 'Please enter at least 1 code per set and at least 1 set.';
+        genErrorEl.style.display='';
+        return;
+      }
+      if(over){
+        genErrorEl.textContent = 'Total requested exceeds the 10,000 code limit. Please lower the amounts.';
+        genErrorEl.style.display='';
+        return;
+      }
+      const toggleA = document.querySelector('input[name=toggleA]:checked').value;
+      const toggleBRaw = document.querySelector('input[name=toggleB]:checked').value;
+      const toggleB = (toggleA === 'repeatable') ? null : toggleBRaw;
+
+      const setsToBuild = Math.min(nos, 10);
+      const codesPerSetShown = Math.min(cps, 100);
+      const hiddenSets = Math.max(0, nos - setsToBuild);
+      const hiddenPerSet = Math.max(0, cps - codesPerSetShown);
+
+      let counter = 1;
+      const sets = [];
+      for(let s=0; s<setsToBuild; s++){
+        const codes = [];
+        for(let c=0; c<codesPerSetShown; c++){
+          codes.push({
+            id: uid('code'),
+            label: 'FAKECODES' + String(counter).padStart(3,'0'),
+            used:false, usedBy:null
+          });
+          counter++;
+        }
+        sets.push({ setIndex:s, requestedCount:cps, displayedCount:codesPerSetShown, hiddenCount:hiddenPerSet, codes });
+      }
+
+      currentGeneration = {
+        id: uid('gen'), type:'unique', server, reward,
+        toggleA, toggleB,
+        codesPerSet:cps, numberOfSets:nos, totalRequested:total,
+        sets, hiddenSets,
+        startDate:startVal, endDate:endVal
+      };
+    } else {
+      const name = document.getElementById('masterName').value.trim();
+      if(!name){
+        genErrorEl.textContent = 'Please enter a master code name.';
+        genErrorEl.style.display='';
+        return;
+      }
+      const limitType = document.querySelector('input[name=masterLimit]:checked').value;
+      let cap = null;
+      if(limitType === 'limited'){
+        cap = parseInt(document.getElementById('masterCap').value,10) || 0;
+        if(cap < 1){
+          genErrorEl.textContent = 'Please enter a redemption cap of at least 1.';
+          genErrorEl.style.display='';
+          return;
+        }
+      }
+      currentGeneration = {
+        id: uid('gen'), type:'master', server, reward,
+        name, limitType, cap, redeemedCount:0,
+        startDate:startVal, endDate:endVal
+      };
+    }
+
+    renderGeneratedResult();
+    document.getElementById('generatedResult').style.display='';
+  });
+
+  function generationSummaryHTML(gen){
+    if(gen.type === 'unique'){
+      const aText = gen.toggleA === 'repeatable' ? 'Can be repeated within a set' : 'Cannot be repeated within a set';
+      let bText = 'N/A (unlimited within each set already)';
+      if(gen.toggleB === 'oncePerSet') bText = 'Once per set — max ' + gen.numberOfSets + ' redemptions per player total';
+      if(gen.toggleB === 'noCross') bText = 'Cannot cross sets — max 1 redemption per player, ever, from this generation';
+      return `
+        <div class="summary-line"><b>Type:</b> Unique Code &nbsp; <span class="muted">·</span> &nbsp; <b>Server:</b> ${gen.server}</div>
+        <div class="summary-line"><b>Condition A:</b> ${aText}</div>
+        <div class="summary-line"><b>Condition B:</b> ${bText}</div>
+        <div class="summary-line"><b>Sets:</b> ${gen.numberOfSets} × ${gen.codesPerSet} codes/set = <b>${gen.totalRequested.toLocaleString()}</b> total requested</div>
+        <div class="summary-line"><b>Reward:</b> ${escapeHTML(gen.reward)}</div>
+        <div class="summary-line"><b>Window:</b> <span class="muted">${formatDisplayDate(gen.startDate)} → ${formatDisplayDate(gen.endDate)}</span></div>
+      `;
+    } else {
+      const limitText = gen.limitType==='unlimited' ? 'Unlimited' : `Limited to ${gen.cap.toLocaleString()} redemptions (${gen.redeemedCount}/${gen.cap} used)`;
+      return `
+        <div class="summary-line"><b>Type:</b> Master Code &nbsp; <span class="muted">·</span> &nbsp; <b>Server:</b> ${gen.server}</div>
+        <div class="summary-line"><b>Code name:</b> <code class="pill">${escapeHTML(gen.name)}</code></div>
+        <div class="summary-line"><b>Limit:</b> ${limitText}</div>
+        <div class="summary-line"><b>Reward:</b> ${escapeHTML(gen.reward)}</div>
+        <div class="summary-line"><b>Window:</b> <span class="muted">${formatDisplayDate(gen.startDate)} → ${formatDisplayDate(gen.endDate)}</span></div>
+      `;
+    }
+  }
+
+  function renderGeneratedResult(){
+    const box = document.getElementById('generatedResult');
+    const gen = currentGeneration;
+    let html = `<h2>✅ Generated</h2>` + generationSummaryHTML(gen);
+
+    if(gen.type === 'unique'){
+      html += `<h3 style="margin-top:14px;">Fake codes (demo pool)</h3>`;
+      gen.sets.forEach(set=>{
+        html += `<details class="set-block"${set.setIndex===0?' open':''}><summary>Set ${set.setIndex+1} <span class="muted">(${set.requestedCount} requested)</span></summary><div class="code-chip-row">`;
+        set.codes.forEach(c=>{
+          html += `<span class="code-chip">${c.label}</span>`;
+        });
+        html += `</div>`;
+        if(set.hiddenCount>0) html += `<div class="more-note">...and ${set.hiddenCount} more in this set</div>`;
+        html += `</details>`;
+      });
+      if(gen.hiddenSets>0){
+        html += `<p class="more-note">...and ${gen.hiddenSets} more set${gen.hiddenSets>1?'s':''} not shown in this demo</p>`;
+      }
+    } else {
+      html += `<p class="hint" style="margin-top:10px;">Head to the Redemption tab and type <code class="pill">${escapeHTML(gen.name)}</code> to test it.</p>`;
+    }
+    html += `<p class="hint" style="margin-top:14px;">Go to <b>Step 2: Code Redemption Simulator</b> to test this against simulated players →</p>`;
+    box.innerHTML = html;
+  }
+
+  function escapeHTML(str){
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  // ---------------------------------------------------------------
+  // REDEMPTION ENGINE
+  // ---------------------------------------------------------------
+  function attemptRedeem(gen, user, rawInput){
+    const input = (rawInput||'').trim();
+    if(!input) return {success:false, message:'Please type a code first.'};
+
+    if(gen.type === 'unique'){
+      let found=null, foundSet=null;
+      for(const set of gen.sets){
+        const c = set.codes.find(c=> c.label.toLowerCase() === input.toLowerCase());
+        if(c){ found=c; foundSet=set; break; }
+      }
+      if(!found){
+        return {success:false, message:"Invalid code — either it doesn't exist, or it's beyond the first 100 codes/set shown in this demo."};
+      }
+      if(found.used){
+        return {success:false, message:`This exact code has already been redeemed${found.usedBy ? ' (by '+escapeHTML(found.usedBy)+')' : ''}.`};
+      }
+      const userRedemptionsInGen = user.redemptions.filter(r=>r.generationId===gen.id);
+      if(gen.toggleA === 'unrepeatable'){
+        if(gen.toggleB === 'noCross'){
+          if(userRedemptionsInGen.length>0){
+            return {success:false, message:'You already redeemed a reward from this code generation. This set of codes cannot be redeemed twice by the same player, even across different sets.'};
+          }
+        } else { // oncePerSet
+          const inThisSet = userRedemptionsInGen.some(r=>r.setIndex===foundSet.setIndex);
+          if(inThisSet){
+            return {success:false, message:`You already redeemed a reward from Set ${foundSet.setIndex+1}. You can still redeem from a different set, if one exists.`};
+          }
+        }
+      }
+      found.used = true;
+      found.usedBy = user.name;
+      user.redemptions.push({generationId:gen.id, setIndex:foundSet.setIndex, codeLabel:found.label, reward:gen.reward, timestamp:Date.now()});
+      return {success:true, message:`Success! ${escapeHTML(user.name)} received: ${escapeHTML(gen.reward)}`};
+    } else {
+      if(input.toLowerCase() !== gen.name.trim().toLowerCase()){
+        return {success:false, message:'Invalid code.'};
+      }
+      const already = user.redemptions.some(r=>r.generationId===gen.id);
+      if(already){
+        return {success:false, message:'You already redeemed this master code.'};
+      }
+      if(gen.limitType==='limited' && gen.redeemedCount >= gen.cap){
+        return {success:false, message:`This code has reached its maximum redemption limit (${gen.cap}/${gen.cap}). No reward given.`};
+      }
+      gen.redeemedCount++;
+      user.redemptions.push({generationId:gen.id, setIndex:null, codeLabel:gen.name, reward:gen.reward, timestamp:Date.now()});
+      return {success:true, message:`Success! ${escapeHTML(user.name)} received: ${escapeHTML(gen.reward)}`};
+    }
+  }
+
+  // ---------------------------------------------------------------
+  // REDEEM TAB — users
+  // ---------------------------------------------------------------
+  function ensureFirstUser(){
+    if(users.length===0){
+      const u = {id:uid('user'), name:'User A', redemptions:[]};
+      users.push(u);
+      activeUserId = u.id;
+    }
+  }
+
+  document.getElementById('addUserBtn').addEventListener('click', ()=>{
+    const letter = String.fromCharCode(65 + (users.length % 26));
+    const u = {id:uid('user'), name:'User '+letter+(users.length>=26?('_'+users.length):''), redemptions:[]};
+    users.push(u);
+    activeUserId = u.id;
+    renderRedeemTab();
+  });
+
+  function renderUserTabs(){
+    const wrap = document.getElementById('userTabs');
+    wrap.innerHTML = '';
+    users.forEach(u=>{
+      const tab = document.createElement('div');
+      tab.className = 'user-tab' + (u.id===activeUserId ? ' active' : '');
+      tab.addEventListener('click', ()=>{ activeUserId = u.id; renderRedeemTab(); });
+
+      const nameSpan = document.createElement('span');
+      nameSpan.className = 'name-span';
+      nameSpan.textContent = u.name;
+
+      const editBtn = document.createElement('button');
+      editBtn.className = 'edit-btn';
+      editBtn.textContent = '✎';
+      editBtn.title = 'Rename';
+      editBtn.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        const input = document.createElement('input');
+        input.className = 'rename';
+        input.value = u.name;
+        function commit(){
+          u.name = input.value.trim() || u.name;
+          renderRedeemTab();
+        }
+        input.addEventListener('click', ev=> ev.stopPropagation());
+        input.addEventListener('blur', commit);
+        input.addEventListener('keydown', ev=>{
+          if(ev.key==='Enter'){ ev.preventDefault(); commit(); }
+          if(ev.key==='Escape'){ ev.preventDefault(); renderRedeemTab(); }
+        });
+        tab.replaceChild(input, nameSpan);
+        input.focus();
+        input.select();
+      });
+
+      const x = document.createElement('button');
+      x.className = 'x';
+      x.textContent = '✕';
+      x.title = 'Remove user';
+      x.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        if(users.length===1) return; // keep at least one
+        users = users.filter(us=>us.id!==u.id);
+        if(activeUserId===u.id) activeUserId = users[0].id;
+        renderRedeemTab();
+      });
+      tab.appendChild(nameSpan);
+      tab.appendChild(editBtn);
+      tab.appendChild(x);
+      wrap.appendChild(tab);
+    });
+  }
+
+  function renderActiveGenSummary(){
+    document.getElementById('activeGenSummary').innerHTML =
+      `<h2>Active generation</h2>` + generationSummaryHTML(currentGeneration);
+  }
+
+  function renderUserHistory(user){
+    const el = document.getElementById('userHistory');
+    if(user.redemptions.length===0){
+      el.innerHTML = '<p class="empty-state">No redemptions yet.</p>';
+      return;
+    }
+    let html = '<table><thead><tr><th>Code</th><th>Set</th><th>Reward</th><th>Time</th></tr></thead><tbody>';
+    user.redemptions.slice().reverse().forEach(r=>{
+      html += `<tr><td><code class="pill">${escapeHTML(r.codeLabel)}</code></td><td>${r.setIndex!==null && r.setIndex!==undefined ? 'Set '+(r.setIndex+1) : '—'}</td><td>${escapeHTML(r.reward)}</td><td>${new Date(r.timestamp).toLocaleTimeString()}</td></tr>`;
+    });
+    html += '</tbody></table>';
+    el.innerHTML = html;
+  }
+
+  function renderCodePool(){
+    const el = document.getElementById('codePool');
+    const gen = currentGeneration;
+    if(gen.type === 'unique'){
+      // remember which sets are currently expanded so re-rendering (e.g. after a redemption) doesn't collapse them
+      const openIndexes = new Set();
+      el.querySelectorAll('details.set-block').forEach((d,i)=>{ if(d.open) openIndexes.add(i); });
+      const isFirstRender = el.querySelectorAll('details.set-block').length === 0;
+
+      let html = '';
+      gen.sets.forEach(set=>{
+        const usedCount = set.codes.filter(c=>c.used).length;
+        const shouldOpen = isFirstRender ? set.setIndex===0 : openIndexes.has(set.setIndex);
+        html += `<details class="set-block"${shouldOpen?' open':''}><summary>Set ${set.setIndex+1} <span class="muted">(${usedCount}/${set.codes.length} used)</span></summary><div class="code-chip-row">`;
+        set.codes.forEach(c=>{
+          html += `<span class="code-chip ${c.used?'used':''}" title="${c.used ? 'Used by '+escapeHTML(c.usedBy) : 'Available'}">${c.label}</span>`;
+        });
+        html += `</div>`;
+        if(set.hiddenCount>0) html += `<div class="more-note">...and ${set.hiddenCount} more in this set (not redeemable in this demo)</div>`;
+        html += `</details>`;
+      });
+      if(gen.hiddenSets>0) html += `<p class="more-note">...and ${gen.hiddenSets} more set(s) not shown in this demo</p>`;
+      el.innerHTML = html;
+    } else {
+      const limitText = gen.limitType==='unlimited' ? 'Unlimited' : `${gen.redeemedCount} / ${gen.cap} redeemed`;
+      el.innerHTML = `
+        <div class="summary-line"><span class="status-dot ${gen.limitType==='limited' && gen.redeemedCount>=gen.cap ? 'status-used':'status-available'}"></span><b>${escapeHTML(gen.name)}</b></div>
+        <div class="summary-line">${limitText}</div>
+      `;
+    }
+  }
+
+  function renderRedeemTab(){
+    if(!currentGeneration){
+      document.getElementById('noGenNotice').style.display='';
+      document.getElementById('redeemContent').style.display='none';
+      return;
+    }
+    document.getElementById('noGenNotice').style.display='none';
+    document.getElementById('redeemContent').style.display='';
+    ensureFirstUser();
+    if(!users.find(u=>u.id===activeUserId)) activeUserId = users[0].id;
+
+    renderUserTabs();
+    renderActiveGenSummary();
+    renderCodePool();
+    const user = users.find(u=>u.id===activeUserId);
+    renderUserHistory(user);
+    document.getElementById('resultArea').innerHTML = '';
+    document.getElementById('redeemInput').value = '';
+  }
+
+  document.getElementById('redeemBtn').addEventListener('click', doRedeem);
+  document.getElementById('redeemInput').addEventListener('keydown', (e)=>{
+    if(e.key==='Enter') doRedeem();
+  });
+
+  function doRedeem(){
+    const user = users.find(u=>u.id===activeUserId);
+    if(!user || !currentGeneration) return;
+    const input = document.getElementById('redeemInput').value;
+    const result = attemptRedeem(currentGeneration, user, input);
+    const resultArea = document.getElementById('resultArea');
+    resultArea.innerHTML = `<div class="result-box ${result.success?'result-success':'result-error'}">${result.success?'✅':'❌'} ${result.message}</div>`;
+    document.getElementById('redeemInput').value = '';
+    document.getElementById('redeemInput').focus();
+    renderCodePool();
+    renderUserHistory(user);
+    renderUserTabs();
+    renderActiveGenSummary();
+  }
+
+})();
+</script>
+</body>
+</html>
