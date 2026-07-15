@@ -9,11 +9,20 @@
     --bg:#0f1420; --panel:#161d2e; --panel2:#1d2740; --border:#2a3552;
     --text:#e7ecf7; --muted:#93a0bd; --accent:#5b8def; --accent2:#7c6bf0;
     --green:#3ecf8e; --red:#f0637a; --amber:#f2b84b;
+    --green-text:#3ecf8e; --red-text:#f0637a; --amber-text:#f2b84b;
+    --disabled-bg:#3a4560; --disabled-text:#7c88a6;
     --radius:10px;
+  }
+  body.light-mode{
+    --bg:#f4f6fb; --panel:#ffffff; --panel2:#eef1f8; --border:#d7dded;
+    --text:#1a2233; --muted:#5c6680; --accent:#3865c9; --accent2:#6a4fd0;
+    --green:#2fa876; --red:#d94a63; --amber:#c98a1f;
+    --green-text:#1f8f63; --red-text:#c23652; --amber-text:#9c6a10;
+    --disabled-bg:#e3e7f0; --disabled-text:#9aa3b8;
   }
   *{box-sizing:border-box;}
   body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-       background:var(--bg);color:var(--text);line-height:1.5;}
+       background:var(--bg);color:var(--text);line-height:1.5;transition:background-color .15s ease,color .15s ease;}
   .wrap{max-width:1180px;margin:0 auto;padding:24px 20px 80px;}
   header.top{padding:18px 0 6px;border-bottom:1px solid var(--border);margin-bottom:18px;}
   header.top h1{font-size:20px;margin:0 0 4px;display:flex;align-items:center;gap:8px;}
@@ -56,19 +65,28 @@
   button.btn{background:var(--accent);color:#fff;border:none;padding:10px 18px;border-radius:8px;
       font-size:14px;font-weight:700;cursor:pointer;}
   button.btn:hover{filter:brightness(1.08);}
-  button.btn:disabled{background:#3a4560;color:#7c88a6;cursor:not-allowed;}
+  button.btn:disabled{background:var(--disabled-bg);color:var(--disabled-text);cursor:not-allowed;}
   button.btn.secondary{background:var(--panel2);border:1px solid var(--border);color:var(--text);}
   button.btn.ghost{background:none;border:1px solid var(--border);color:var(--muted);padding:6px 12px;font-size:12.5px;}
   button.btn.small{padding:6px 12px;font-size:12.5px;}
   button.btn.danger{background:var(--red);}
 
-  .warn-banner{background:rgba(242,184,75,.12);border:1px solid rgba(242,184,75,.4);color:#f2b84b;
+  .warn-banner{background:rgba(242,184,75,.12);border:1px solid rgba(242,184,75,.4);color:var(--amber-text);
       padding:10px 12px;border-radius:8px;font-size:13px;margin-bottom:14px;}
+  .team-name{color:var(--amber-text);font-weight:700;}
+  .top-warning{background:rgba(242,184,75,.14);border:2px solid var(--amber);border-radius:var(--radius);
+      padding:16px 20px;margin-bottom:20px;}
+  .top-warning .tw-title{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:800;color:var(--amber-text);margin-bottom:10px;}
+  .top-warning ul{margin:0;padding-left:20px;}
+  .top-warning li{font-size:13.5px;margin-bottom:6px;color:var(--text);}
+  .top-warning li:last-child{margin-bottom:0;}
   .error-text{color:var(--red);font-size:12.5px;margin-top:6px;}
   .total-box{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin:10px 0;}
   .total-box .num{font-size:22px;font-weight:800;}
   .total-box.over{border-color:var(--red);}
-  .total-box .over-text{color:var(--red);font-size:12.5px;margin-top:4px;font-weight:600;}
+  .total-box.atlimit{border-color:var(--amber);}
+  .total-box .over-text{color:var(--red-text);font-size:12.5px;margin-top:4px;font-weight:600;}
+  .total-box .atlimit-text{color:var(--amber-text);font-size:12.5px;margin-top:4px;font-weight:600;}
 
   table{width:100%;border-collapse:collapse;font-size:13px;}
   th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--border);}
@@ -90,6 +108,15 @@
   .code-chip{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;padding:3px 7px;border-radius:6px;
       border:1px solid var(--border);background:var(--panel);}
   .code-chip.used{text-decoration:line-through;color:var(--muted);border-color:var(--red);}
+  .copyable-code{cursor:pointer;transition:background-color .12s ease,border-color .12s ease,color .12s ease;}
+  .copyable-code:hover{border-color:var(--accent);color:var(--accent);}
+  .copyable-code.copied{background:var(--accent);border-color:var(--accent);color:#fff;text-decoration:none;}
+
+  .copy-toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(16px);
+      background:var(--accent);color:#fff;padding:11px 20px;border-radius:999px;font-size:13.5px;font-weight:700;
+      box-shadow:0 8px 24px rgba(0,0,0,.35);opacity:0;pointer-events:none;
+      transition:opacity .18s ease, transform .18s ease;z-index:9999;display:flex;align-items:center;gap:8px;}
+  .copy-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
   .more-note{font-size:12px;color:var(--muted);margin-top:6px;font-style:italic;}
 
   .summary-line{font-size:13px;margin:3px 0;}
@@ -111,8 +138,8 @@
   .redeem-row input{flex:1;}
 
   .result-box{padding:12px 14px;border-radius:8px;font-size:13.5px;margin-bottom:14px;border:1px solid;}
-  .result-success{background:rgba(62,207,142,.1);border-color:var(--green);color:#3ecf8e;}
-  .result-error{background:rgba(240,99,122,.1);border-color:var(--red);color:#f0637a;}
+  .result-success{background:rgba(62,207,142,.1);border-color:var(--green);color:var(--green-text);}
+  .result-error{background:rgba(240,99,122,.1);border-color:var(--red);color:var(--red-text);}
 
   .empty-state{color:var(--muted);font-size:13.5px;padding:20px;text-align:center;}
   .flex-between{display:flex;justify-content:space-between;align-items:center;}
@@ -123,137 +150,167 @@
 <div class="wrap">
 
   <header class="top">
-    <h1>🎮 Redeem Code Simulator <span class="badge-sandbox">SANDBOX — NOT REAL CODES</span></h1>
-    <p>Practice requesting and redeeming in-game codes exactly like our backend would enforce it. Nothing here touches the real system.</p>
+    <div class="flex-between" style="flex-wrap:wrap;gap:12px;">
+      <h1><span data-i18n="header.title">🎮 Redeem Code Simulator</span> <span class="badge-sandbox" data-i18n="header.badge">SANDBOX — NOT REAL CODES</span></h1>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn secondary small" id="clearAllBtn" type="button" data-i18n="header.clearAll">🗑 Clear all</button>
+        <button class="btn secondary small" id="themeToggle" type="button" data-i18n="theme.light">☀️ Light mode</button>
+        <button class="btn secondary small" id="langToggle" type="button">🇹🇭 ไทย</button>
+      </div>
+    </div>
+    <p data-i18n="header.desc">Practice requesting and redeeming in-game codes exactly like <span class="team-name">Yellow Team</span>'s backend would enforce it. Nothing here touches the real system.</p>
   </header>
 
+  <div class="top-warning">
+    <div class="tw-title" data-i18n="topwarn.title">⚠ Before you submit a real request to <span class="team-name">Yellow Team</span></div>
+    <ul>
+      <li data-i18n="topwarn.li1">Please submit your request to <span class="team-name">Yellow Team</span> beforehand — at least <b>7 business days</b> before you need it.</li>
+      <li data-i18n="topwarn.li2">Please fill in the information correctly (additional conditions, amount, start date, end date, etc.).</li>
+      <li data-i18n="topwarn.li3">If you have a question or a special kind of request, please consult <span class="team-name">Yellow Team</span>.</li>
+    </ul>
+  </div>
+
   <nav class="tabs">
-    <button class="tab-btn active" data-tab="generate">1. Code Generation Simulator</button>
-    <button class="tab-btn" data-tab="redeem">2. Code Redemption Simulator</button>
+    <button class="tab-btn active" data-tab="generate" data-i18n="tabs.generate">1. Code Generation Simulator</button>
+    <button class="tab-btn" data-tab="redeem" data-i18n="tabs.redeem">2. Code Redemption Simulator</button>
   </nav>
 
   <!-- ===================== GENERATE PANEL ===================== -->
   <section id="panel-generate" class="panel active">
 
     <div class="card">
-      <h2>Step 1 — What kind of code is this?</h2>
+      <h2 data-i18n="step1.title">Step 1 — What kind of code is this?</h2>
       <div class="grid2">
         <label class="radio-card" id="typeCardUnique">
           <input type="radio" name="codeType" value="unique" checked>
-          <span class="rc-text"><b>Unique Code</b><span>Server-generated, 12-character codes. Each individual code can only ever be used once.</span></span>
+          <span class="rc-text"><b data-i18n="step1.uniqueTitle">Unique Code</b><span data-i18n="step1.uniqueDesc">Server-generated, 12-character codes. Each individual code can only ever be used once.</span></span>
         </label>
         <label class="radio-card" id="typeCardMaster">
           <input type="radio" name="codeType" value="master">
-          <span class="rc-text"><b>Master Code</b><span>One named code everyone types to redeem. Names can never repeat across any server, ever.</span></span>
+          <span class="rc-text"><b data-i18n="step1.masterTitle">Master Code</b><span data-i18n="step1.masterDesc">One named code everyone types to redeem. Names must be unique within a server, across all of that server's games.</span></span>
         </label>
       </div>
     </div>
 
     <!-- UNIQUE CODE FORM -->
     <div class="card" id="uniqueForm">
-      <h2>Unique Code Settings</h2>
+      <h2 data-i18n="unique.title">Unique Code Settings</h2>
 
-      <h3>Additional Condition A — reuse within a set</h3>
+      <h3 data-i18n="unique.condATitle">Additional Condition A — reuse within a set</h3>
       <label class="radio-card selected" id="toggleA-repeatable">
         <input type="radio" name="toggleA" value="repeatable" checked>
-        <span class="rc-text"><b>Can be repeated (เติมซ้ำได้)</b><span>If one user gets a whole list of codes from this set, they can redeem all of them and get a reward each time.</span></span>
+        <span class="rc-text"><b data-i18n="unique.condARepeatTitle">Can be repeated (เติมซ้ำได้)</b><span data-i18n="unique.condARepeatDesc">If one user gets a whole list of codes from this set, they can redeem all of them and get a reward each time.</span></span>
       </label>
       <label class="radio-card" id="toggleA-unrepeatable">
         <input type="radio" name="toggleA" value="unrepeatable">
-        <span class="rc-text"><b>Cannot be repeated (เติมซ้ำไม่ได้)</b><span>Even if a user has several codes from this set, they only get one reward — from the first code they redeem. Further attempts show an error.</span></span>
+        <span class="rc-text"><b data-i18n="unique.condAUnrepeatTitle">Cannot be repeated (เติมซ้ำไม่ได้)</b><span data-i18n="unique.condAUnrepeatDesc">Even if a user has several codes from this set, they only get one reward — from the first code they redeem. Further attempts show an error.</span></span>
       </label>
 
-      <h3 style="margin-top:16px;">Additional Condition B — reuse across sets</h3>
+      <h3 style="margin-top:16px;" data-i18n="unique.condBTitle">Additional Condition B — reuse across sets</h3>
       <label class="radio-card" id="toggleB-once">
         <input type="radio" name="toggleB" value="oncePerSet" checked>
-        <span class="rc-text"><b>Users can use code once per set (เติมข้ามได้)</b><span>Max redemptions per user = number of sets. E.g. with sets A and B, a user can redeem once from A <i>and</i> once from B.</span></span>
+        <span class="rc-text"><b data-i18n="unique.condBOnceTitle">Users can use code once per set (เติมข้ามได้)</b><span data-i18n="unique.condBOnceDesc">Max redemptions per user = number of sets. E.g. with sets A and B, a user can redeem once from A <i>and</i> once from B.</span></span>
       </label>
       <label class="radio-card" id="toggleB-never">
         <input type="radio" name="toggleB" value="noCross">
-        <span class="rc-text"><b>Cannot be repeated even across sets (เติมข้ามไม่ได้)</b><span>True unrepeatable — a user can redeem only once from this entire generation, no matter how many sets exist.</span></span>
+        <span class="rc-text"><b data-i18n="unique.condBNeverTitle">Cannot be repeated even across sets (เติมข้ามไม่ได้)</b><span data-i18n="unique.condBNeverDesc">True unrepeatable — a user can redeem only once from this entire generation, no matter how many sets exist.</span></span>
       </label>
-      <p class="hint" id="toggleB-note" style="display:none;">Condition B doesn't apply here — "Can be repeated" already means unlimited redemptions within a set, so there's nothing left to restrict across sets.</p>
+      <p class="hint" id="toggleB-note" style="display:none;" data-i18n="unique.condBNote">Condition B doesn't apply here — "Can be repeated" already means unlimited redemptions within a set, so there's nothing left to restrict across sets.</p>
 
-      <h3 style="margin-top:16px;">Amount</h3>
+      <h3 style="margin-top:16px;" data-i18n="unique.prefixTitle">Code Prefix (optional)</h3>
+      <div class="field">
+        <label data-i18n="unique.prefixLabel">Prefix</label>
+        <input type="text" id="codePrefix" maxlength="6" placeholder="e.g. PREFIX" data-i18n-ph="unique.prefixPlaceholder" style="max-width:220px;">
+        <p class="hint" data-i18n="unique.prefixHint">Up to 6 characters, letters & numbers only. Leave blank for standard demo codes.</p>
+      </div>
+      <div class="warn-banner" data-i18n="unique.prefixWarn">⚠ Requesting a prefixed code must be consulted with <span class="team-name">Yellow Team</span> first before you submit the real request — this sandbox only lets you preview what the format would look like.</div>
+
+      <h3 style="margin-top:16px;" data-i18n="unique.amountTitle">Amount</h3>
       <div class="grid2">
         <div class="field">
-          <label>Number of codes per set</label>
+          <label data-i18n="unique.codesPerSetLabel">Number of codes per set</label>
           <input type="number" id="codesPerSet" min="1" value="100">
         </div>
         <div class="field">
-          <label>Number of sets</label>
+          <label data-i18n="unique.numberOfSetsLabel">Number of sets</label>
           <input type="number" id="numberOfSets" min="1" value="1">
         </div>
       </div>
       <div class="total-box" id="totalBox">
-        <div>Total codes to request from the backend team</div>
+        <div data-i18n="unique.totalLabel">Total codes to request from <span class="team-name">Yellow Team</span></div>
         <div class="num" id="totalNum">10</div>
-        <div class="hint">We can't generate more than 10,000 unique codes in one request.</div>
-        <div class="over-text" id="overText" style="display:none;">⚠ This exceeds the 10,000 code limit. Please lower the amounts before generating.</div>
+        <div class="hint" data-i18n="unique.totalHint">We can't generate more than 10,000 unique codes in one request.</div>
+        <div class="atlimit-text" id="atLimitText" style="display:none;" data-i18n="unique.atLimit">⚠ You're at the maximum request size (10,000 codes) — please contact <span class="team-name">Yellow Team</span> first if you need more.</div>
+        <div class="over-text" id="overText" style="display:none;" data-i18n="unique.over">⚠ This exceeds the 10,000 code limit. Please contact <span class="team-name">Yellow Team</span> first if you need a request this large.</div>
       </div>
-      <p class="hint">This sandbox only visually generates up to <b>100 codes per set</b> and <b>10 sets</b> for performance — the rest are represented as "...and XXX more" so it stays fast, even though your real request can go up to 10,000.</p>
+      <p class="hint" data-i18n="unique.demoHint">This sandbox only visually displays up to <b>100 codes per set</b> and <b>10 sets</b> for performance reasons — the rest are represented as "...and XXX more," so it stays fast, even though your real request can go up to 10,000.</p>
     </div>
 
     <!-- MASTER CODE FORM -->
     <div class="card" id="masterForm" style="display:none;">
-      <h2>Master Code Settings</h2>
-      <div class="warn-banner">⚠ Master Code names can never repeat — across ANY server, forever. If the name you want is already taken, our team will contact you to pick another.</div>
+      <h2 data-i18n="master.title">Master Code Settings</h2>
+      <div class="warn-banner" data-i18n="master.warn">⚠ Master Code names must be unique within a server — across all of that server's games (e.g. can't use the same name on both TR and WARZ). The same name CAN be reused on a different server (e.g. same name on both CB and HOF is fine). If the name you want is already taken on that server, <span class="team-name">Yellow Team</span> will contact you to pick another.</div>
       <div class="field">
-        <label>Master code name</label>
-        <input type="text" id="masterName" placeholder="e.g. CATDOG">
-        <p class="hint">Not case-sensitive when players redeem it (CATDOG = catdog = CatDog).</p>
+        <label data-i18n="master.nameLabel">Master code name</label>
+        <input type="text" id="masterName" placeholder="e.g. CATDOG" data-i18n-ph="master.namePlaceholder">
+        <p class="hint" data-i18n="master.nameHint">Not case-sensitive when players redeem it (CATDOG = catdog = CatDog).</p>
       </div>
-      <h3>Redemption limit</h3>
+      <h3 data-i18n="master.limitTitle">Redemption limit</h3>
       <label class="radio-card selected" id="master-unlimited">
         <input type="radio" name="masterLimit" value="unlimited" checked>
-        <span class="rc-text"><b>Unlimited</b><span>Any number of unique players can redeem this code (once each).</span></span>
+        <span class="rc-text"><b data-i18n="master.unlimitedTitle">Unlimited</b><span data-i18n="master.unlimitedDesc">Any number of unique players can redeem this code (once each).</span></span>
       </label>
       <label class="radio-card" id="master-limited">
         <input type="radio" name="masterLimit" value="limited">
-        <span class="rc-text"><b>Limited</b><span>Only the first N unique players to redeem get the reward. This is a global cap shared by everyone.</span></span>
+        <span class="rc-text"><b data-i18n="master.limitedTitle">Limited</b><span data-i18n="master.limitedDesc">Only the first N unique players to redeem get the reward. This is a global cap shared by everyone.</span></span>
       </label>
       <div class="field" id="masterCapField" style="display:none;max-width:220px;">
-        <label>Redemption cap</label>
+        <label data-i18n="master.capLabel">Redemption cap</label>
         <input type="number" id="masterCap" min="1" value="100">
       </div>
     </div>
 
     <!-- SHARED FIELDS -->
     <div class="card">
-      <h2>Step 2 — Server & Reward</h2>
+      <h2 data-i18n="shared.title">Step 2 — Server & Game & Reward</h2>
       <div class="grid2">
         <div class="field">
-          <label>Server</label>
+          <label data-i18n="shared.serverLabel">Server</label>
           <select id="serverSelect">
-            <option>M-TH</option>
-            <option>M-SEA</option>
-            <option>PC-TH</option>
-            <option>PC-SEA</option>
+            <option value="CB">CB</option>
+            <option value="HOF">HOF</option>
           </select>
-          <p class="hint">Reference only in this sandbox — not enforced during redemption.</p>
+          <p class="hint" data-i18n="shared.serverHint">Reference only in this sandbox — not enforced during redemption.</p>
         </div>
         <div class="field">
-          <label>Reward description</label>
-          <input type="text" id="rewardDesc" placeholder="e.g. HP Potion (Lv.3) x100">
-          <p class="hint">Everyone who successfully redeems from this generation gets the same reward.</p>
+          <label data-i18n="shared.gameLabel">Game</label>
+          <select id="gameSelect"></select>
+          <div id="gameOtherField" style="display:none;margin-top:8px;">
+            <input type="text" id="gameOtherInput" placeholder="Specify game name" data-i18n-ph="shared.gameOtherPlaceholder">
+          </div>
         </div>
+      </div>
+      <div class="field">
+        <label data-i18n="shared.rewardLabel">Reward description</label>
+        <input type="text" id="rewardDesc" placeholder="e.g. HP Potion (Lv.3) x100" data-i18n-ph="shared.rewardPlaceholder">
+        <p class="hint" data-i18n="shared.rewardHint">Everyone who successfully redeems from this generation gets the same reward. This is for display purposes only in this sandbox — it's not connected to any real reward system.</p>
       </div>
     </div>
 
     <div class="card">
-      <h2>Step 3 — Activation & Expiration</h2>
+      <h2 data-i18n="step3.title">Step 3 — Activation & Expiration</h2>
       <div class="grid2">
         <div class="field">
-          <label>Start / Activation date</label>
+          <label data-i18n="step3.startLabel">Start / Activation date</label>
           <input type="datetime-local" id="startDate" step="1">
         </div>
         <div class="field">
-          <label>End / Expiration date</label>
+          <label data-i18n="step3.endLabel">End / Expiration date</label>
           <input type="datetime-local" id="endDate" step="1">
         </div>
       </div>
-      <p class="hint">Every real code request needs an expiration date — permanent codes aren't allowed. These fields are for your request record only; this sandbox does not enforce them during redemption.</p>
-      <p class="hint">Want a code that effectively never expires? We don't do "permanent" — instead, set the expiration date 10 years in the future and we'll treat it as permanent for practical purposes.</p>
+      <p class="hint" data-i18n="step3.hint1">Every real code request needs a start date and an expiration date — permanent codes aren't allowed. These fields are for your request record only; this sandbox does not enforce them during redemption simulation.</p>
+      <p class="hint" data-i18n="step3.hint2">Want a code that effectively never expires? We don't do "permanent" — instead, set the expiration date 10 years in the future and we'll treat it as permanent for practical purposes.</p>
       <p class="error-text" id="dateError" style="display:none;"></p>
     </div>
 
@@ -262,7 +319,7 @@
         <div>
           <p class="error-text" id="genError" style="display:none;"></p>
         </div>
-        <button class="btn" id="generateBtn">Generate fake codes →</button>
+        <button class="btn" id="generateBtn" data-i18n="generateBtn">Generate fake codes →</button>
       </div>
     </div>
 
@@ -274,14 +331,14 @@
   <section id="panel-redeem" class="panel">
 
     <div class="card" id="noGenNotice">
-      <p class="empty-state">No code generation yet. Head to the Generation tab first and hit "Generate fake codes."</p>
+      <p class="empty-state" data-i18n="redeem.noGen">No code generation yet. Head to the Generation tab first and hit "Generate fake codes."</p>
     </div>
 
     <div id="redeemContent" style="display:none;">
       <div class="card">
         <div class="flex-between" style="margin-bottom:10px;">
-          <h2 style="margin:0;">Simulated Players</h2>
-          <button class="btn small secondary" id="addUserBtn">+ Add user</button>
+          <h2 style="margin:0;" data-i18n="redeem.playersTitle">Simulated Players</h2>
+          <button class="btn small secondary" id="addUserBtn" data-i18n="redeem.addUser">+ Add user</button>
         </div>
         <div class="user-tabs" id="userTabs"></div>
       </div>
@@ -290,19 +347,20 @@
         <div>
           <div class="card" id="activeGenSummary"></div>
           <div class="card">
-            <h2>Redeem a code</h2>
+            <h2 data-i18n="redeem.redeemTitle">Redeem a code</h2>
             <div class="redeem-row">
-              <input type="text" id="redeemInput" placeholder="Type the code here...">
-              <button class="btn" id="redeemBtn">Redeem</button>
+              <input type="text" id="redeemInput" placeholder="Type the code here..." data-i18n-ph="redeem.inputPlaceholder">
+              <button class="btn" id="redeemBtn" data-i18n="redeem.redeemBtn">Redeem</button>
             </div>
             <div id="resultArea"></div>
-            <h3>This player's redemption history</h3>
+            <h3 data-i18n="redeem.historyTitle">This player's redemption history</h3>
             <div id="userHistory"></div>
           </div>
         </div>
         <div>
           <div class="card">
-            <h2>Live code pool</h2>
+            <h2 data-i18n="redeem.poolTitle">Live code pool</h2>
+            <p class="hint" style="margin-top:-4px;margin-bottom:10px;" data-i18n="redeem.poolHint">Click any code to copy it to your clipboard.</p>
             <div id="codePool"></div>
           </div>
         </div>
@@ -311,8 +369,10 @@
 
   </section>
 
-  <footer class="note">Internal sandbox tool · fake codes only · generated codes reset when this page reloads</footer>
+  <footer class="note" data-i18n="footer.note">Internal sandbox tool · fake codes only · generated codes reset when this page reloads</footer>
 </div>
+
+<div class="copy-toast" id="copyToast">✅ Copied to clipboard</div>
 
 <script>
 (function(){
@@ -325,8 +385,362 @@
   let users = [];                 // {id, name, redemptions:[{generationId, setIndex, codeLabel, reward, timestamp}]}
   let activeUserId = null;
   let uidCounter = 1;
+  let lastRenderedGenId = null;   // tracks which generation the code pool was last drawn for
+  let lang = 'en';                // 'en' or 'th'
 
   function uid(prefix){ return prefix + (uidCounter++); }
+
+  // ---------------------------------------------------------------
+  // I18N (English / Thai)
+  // ---------------------------------------------------------------
+  const I18N = {
+    en: {
+      'page.title': 'Redeem Code Simulator (Sandbox)',
+      'header.title': '🎮 Redeem Code Simulator',
+      'header.badge': 'SANDBOX — NOT REAL CODES',
+      'header.clearAll': '🗑 Clear all',
+      'header.desc': 'Practice requesting and redeeming in-game codes exactly like <span class="team-name">Yellow Team</span>\'s backend would enforce it. Nothing here touches the real system.',
+      'topwarn.title': '⚠ Before you submit a real request to <span class="team-name">Yellow Team</span>',
+      'topwarn.li1': 'Please submit your request to <span class="team-name">Yellow Team</span> beforehand — at least <b>7 business days</b> before you need it.',
+      'topwarn.li2': 'Please fill in the information correctly (additional conditions, amount, start date, end date, etc.).',
+      'topwarn.li3': 'If you have a question or a special kind of request, please consult <span class="team-name">Yellow Team</span>.',
+      'tabs.generate': '1. Code Generation Simulator',
+      'tabs.redeem': '2. Code Redemption Simulator',
+      'step1.title': 'Step 1 — What kind of code is this?',
+      'step1.uniqueTitle': 'Unique Code',
+      'step1.uniqueDesc': 'Server-generated, 12-character codes. Each individual code can only ever be used once.',
+      'step1.masterTitle': 'Master Code',
+      'step1.masterDesc': 'One named code everyone types to redeem. Names must be unique within a server, across all of that server\'s games.',
+      'unique.title': 'Unique Code Settings',
+      'unique.condATitle': 'Additional Condition A — reuse within a set',
+      'unique.condARepeatTitle': 'Can be repeated (เติมซ้ำได้)',
+      'unique.condARepeatDesc': 'If one user gets a whole list of codes from this set, they can redeem all of them and get a reward each time.',
+      'unique.condAUnrepeatTitle': 'Cannot be repeated (เติมซ้ำไม่ได้)',
+      'unique.condAUnrepeatDesc': 'Even if a user has several codes from this set, they only get one reward — from the first code they redeem. Further attempts show an error.',
+      'unique.condBTitle': 'Additional Condition B — reuse across sets',
+      'unique.condBOnceTitle': 'Users can use code once per set (เติมข้ามได้)',
+      'unique.condBOnceDesc': 'Max redemptions per user = number of sets. E.g. with sets A and B, a user can redeem once from A <i>and</i> once from B.',
+      'unique.condBNeverTitle': 'Cannot be repeated even across sets (เติมข้ามไม่ได้)',
+      'unique.condBNeverDesc': 'True unrepeatable — a user can redeem only once from this entire generation, no matter how many sets exist.',
+      'unique.condBNote': 'Condition B doesn\'t apply here — "Can be repeated" already means unlimited redemptions within a set, so there\'s nothing left to restrict across sets.',
+      'unique.prefixTitle': 'Code Prefix (optional)',
+      'unique.prefixLabel': 'Prefix',
+      'unique.prefixPlaceholder': 'e.g. PREFIX',
+      'unique.prefixHint': 'Up to 6 characters, letters & numbers only. Leave blank for standard demo codes.',
+      'unique.prefixWarn': '⚠ Requesting a prefixed code must be consulted with <span class="team-name">Yellow Team</span> first before you submit the real request — this sandbox only lets you preview what the format would look like.',
+      'unique.amountTitle': 'Amount',
+      'unique.codesPerSetLabel': 'Number of codes per set',
+      'unique.numberOfSetsLabel': 'Number of sets',
+      'unique.totalLabel': 'Total codes to request from <span class="team-name">Yellow Team</span>',
+      'unique.totalHint': 'We can\'t generate more than 10,000 unique codes in one request.',
+      'unique.atLimit': '⚠ You\'re at the maximum request size (10,000 codes) — please contact <span class="team-name">Yellow Team</span> first if you need more.',
+      'unique.over': '⚠ This exceeds the 10,000 code limit. Please contact <span class="team-name">Yellow Team</span> first if you need a request this large.',
+      'unique.demoHint': 'This sandbox only visually displays up to <b>100 codes per set</b> and <b>10 sets</b> for performance reasons — the rest are represented as "...and XXX more," so it stays fast, even though your real request can go up to 10,000.',
+      'master.title': 'Master Code Settings',
+      'master.warn': '⚠ Master Code names must be unique within a server — across all of that server\'s games (e.g. can\'t use the same name on both TR and WARZ). The same name CAN be reused on a different server (e.g. same name on both CB and HOF is fine). If the name you want is already taken on that server, <span class="team-name">Yellow Team</span> will contact you to pick another.',
+      'master.nameLabel': 'Master code name',
+      'master.namePlaceholder': 'e.g. CATDOG',
+      'master.nameHint': 'Not case-sensitive when players redeem it (CATDOG = catdog = CatDog).',
+      'master.limitTitle': 'Redemption limit',
+      'master.unlimitedTitle': 'Unlimited',
+      'master.unlimitedDesc': 'Any number of unique players can redeem this code (once each).',
+      'master.limitedTitle': 'Limited',
+      'master.limitedDesc': 'Only the first N unique players to redeem get the reward. This is a global cap shared by everyone.',
+      'master.capLabel': 'Redemption cap',
+      'shared.title': 'Step 2 — Server & Game & Reward',
+      'shared.serverLabel': 'Server',
+      'shared.serverHint': 'Reference only in this sandbox — not enforced during redemption.',
+      'shared.gameLabel': 'Game',
+      'shared.gameOtherPlaceholder': 'Specify game name',
+      'shared.rewardLabel': 'Reward description',
+      'shared.rewardPlaceholder': 'e.g. HP Potion (Lv.3) x100',
+      'shared.rewardHint': 'Everyone who successfully redeems from this generation gets the same reward. This is for display purposes only in this sandbox — it\'s not connected to any real reward system.',
+      'step3.title': 'Step 3 — Activation & Expiration',
+      'step3.startLabel': 'Start / Activation date',
+      'step3.endLabel': 'End / Expiration date',
+      'step3.hint1': 'Every real code request needs a start date and an expiration date — permanent codes aren\'t allowed. These fields are for your request record only; this sandbox does not enforce them during redemption simulation.',
+      'step3.hint2': 'Want a code that effectively never expires? We don\'t do "permanent" — instead, set the expiration date 10 years in the future and we\'ll treat it as permanent for practical purposes.',
+      'generateBtn': 'Generate fake codes →',
+      'redeem.noGen': 'No code generation yet. Head to the Generation tab first and hit "Generate fake codes."',
+      'redeem.playersTitle': 'Simulated Players',
+      'redeem.addUser': '+ Add user',
+      'redeem.redeemTitle': 'Redeem a code',
+      'redeem.inputPlaceholder': 'Type the code here...',
+      'redeem.redeemBtn': 'Redeem',
+      'redeem.historyTitle': 'This player\'s redemption history',
+      'redeem.poolTitle': 'Live code pool',
+      'redeem.poolHint': 'Click any code to copy it to your clipboard.',
+      'footer.note': 'Internal sandbox tool · fake codes only · generated codes reset when this page reloads',
+      'theme.light': '☀️ Light mode',
+      'theme.dark': '🌙 Dark mode',
+      'lang.toggle': '🇹🇭 ไทย',
+      'js.confirmClear': 'Clear all generated codes and simulated players? This resets everything back to the defaults and cannot be undone.',
+      'js.dateBothRequired': 'Please set both an activation and expiration date.',
+      'js.dateOrder': 'Expiration date must be after the activation date.',
+      'js.minAmount': 'Please enter at least 1 code per set and at least 1 set.',
+      'js.overLimit': 'Total requested exceeds the 10,000 code limit. Please contact Yellow Team first if you need a request this large.',
+      'js.prefixTooLong': 'Prefix can\'t be longer than 6 characters.',
+      'js.masterNameRequired': 'Please enter a master code name.',
+      'js.capMin': 'Please enter a redemption cap of at least 1.',
+      'js.condRepeatable': 'Can be repeated within a set',
+      'js.condUnrepeatable': 'Cannot be repeated within a set',
+      'js.condBNA': 'N/A (unlimited within each set already)',
+      'js.condBOnce': 'Once per set — max {n} redemptions per player total',
+      'js.condBNever': 'Cannot cross sets — max 1 redemption per player, ever, from this generation',
+      'js.type': 'Type:',
+      'js.typeUnique': 'Unique Code',
+      'js.typeMaster': 'Master Code',
+      'js.server': 'Server:',
+      'js.game': 'Game:',
+      'js.condA': 'Condition A:',
+      'js.condB': 'Condition B:',
+      'js.setsLine': '<b>{sets}</b> × {cps} codes/set = <b>{total}</b> total requested',
+      'js.prefix': 'Prefix:',
+      'js.prefixConsult': '— consult Yellow Team before submitting a real prefixed request',
+      'js.reward': 'Reward:',
+      'js.window': 'Window:',
+      'js.codeName': 'Code name:',
+      'js.limit': 'Limit:',
+      'js.unlimited': 'Unlimited',
+      'js.limitedTo': 'Limited to {cap} redemptions ({used}/{cap} used)',
+      'js.generated': '✅ Generated',
+      'js.fakeCodesPool': 'Fake codes (demo pool)',
+      'js.setHeaderRequested': 'Set {n} <span class="muted">({count} requested)</span>',
+      'js.setHeaderUsed': 'Set {n} <span class="muted">({used}/{total} used)</span>',
+      'js.moreInSet': '...and {n} more in this set',
+      'js.moreInSetHidden': '...and {n} more in this set (not redeemable in this demo)',
+      'js.moreSets': '...and {n} more set(s) not shown in this demo',
+      'js.tryItRedeemHint': 'Head to the Redemption tab and type <code class="pill">{name}</code> to test it.',
+      'js.goRedeemHint': 'Head over to the <b>Code Redemption Simulator</b> tab to test this against simulated players →',
+      'js.typeCodeFirst': 'Please type a code first.',
+      'js.invalidOrHidden': 'Invalid code — either it doesn\'t exist, or it\'s beyond the first 100 codes/set shown in this demo.',
+      'js.alreadyRedeemedExact': 'This exact code has already been redeemed{byUser}.',
+      'js.byUser': ' (by {name})',
+      'js.alreadyRedeemedGen': 'You already redeemed a reward from this code generation. This set of codes cannot be redeemed twice by the same player, even across different sets.',
+      'js.alreadyRedeemedSet': 'You already redeemed a reward from Set {n}. You can still redeem from a different set, if one exists.',
+      'js.success': 'Success! {name} received: {reward}',
+      'js.invalidCode': 'Invalid code.',
+      'js.alreadyRedeemedMaster': 'You already redeemed this master code.',
+      'js.masterCapReached': 'This code has reached its maximum redemption limit ({cap}/{cap}). No reward given.',
+      'js.userDefaultName': 'User {letter}',
+      'js.rename': 'Rename',
+      'js.removeUser': 'Remove user',
+      'js.activeGen': 'Active generation',
+      'js.noRedemptions': 'No redemptions yet.',
+      'js.thCode': 'Code',
+      'js.thSet': 'Set',
+      'js.thReward': 'Reward',
+      'js.thTime': 'Time',
+      'js.setN': 'Set {n}',
+      'js.dash': '—',
+      'js.copiedToast': '✅ Copied "{text}" to clipboard',
+      'js.copiedTitle': 'Copied!',
+      'js.usedByClickCopy': 'Used by {name} — click to copy',
+      'js.clickCopy': 'Click to copy',
+      'js.redeemed': '{count} / {cap} redeemed',
+      'js.otherOption': 'Other'
+    },
+    th: {
+      'page.title': 'ตัวจำลองการแลกโค้ด (แซนด์บ็อกซ์)',
+      'header.title': '🎮 ตัวจำลองการแลกโค้ด',
+      'header.badge': 'แซนด์บ็อกซ์ — ไม่ใช่โค้ดจริง',
+      'header.clearAll': '🗑 ล้างทั้งหมด',
+      'header.desc': 'ฝึกการขอและแลกโค้ดในเกม เหมือนกับที่ระบบหลังบ้านของ <span class="team-name">ทีมสีเหลือง</span> จะบังคับใช้จริง เครื่องมือนี้ไม่แตะต้องระบบจริงแต่อย่างใด',
+      'topwarn.title': '⚠ ก่อนส่งคำขอจริงไปยัง <span class="team-name">ทีมสีเหลือง</span>',
+      'topwarn.li1': 'กรุณาส่งคำขอถึง <span class="team-name">ทีมสีเหลือง</span> ล่วงหน้า — อย่างน้อย <b>7 วันทำการ</b> ก่อนวันที่ต้องการใช้งาน',
+      'topwarn.li2': 'กรุณากรอกข้อมูลให้ถูกต้อง (เงื่อนไขเพิ่มเติม จำนวน วันเริ่มต้น วันสิ้นสุด ฯลฯ)',
+      'topwarn.li3': 'หากมีคำถามหรือคำขอรูปแบบพิเศษ กรุณาปรึกษา <span class="team-name">ทีมสีเหลือง</span>',
+      'tabs.generate': '1. ตัวจำลองการสร้างโค้ด',
+      'tabs.redeem': '2. ตัวจำลองการแลกโค้ด',
+      'step1.title': 'ขั้นตอนที่ 1 — โค้ดนี้เป็นประเภทไหน?',
+      'step1.uniqueTitle': 'โค้ดเฉพาะตัว (Unique Code)',
+      'step1.uniqueDesc': 'โค้ด 12 ตัวอักษรที่สร้างโดยเซิร์ฟเวอร์ แต่ละโค้ดใช้ได้เพียงครั้งเดียวเท่านั้น',
+      'step1.masterTitle': 'มาสเตอร์โค้ด (Master Code)',
+      'step1.masterDesc': 'โค้ดชื่อเดียวที่ทุกคนพิมพ์เพื่อแลก ชื่อโค้ดต้องไม่ซ้ำกันภายในเซิร์ฟเวอร์เดียวกัน ครอบคลุมทุกเกมของเซิร์ฟเวอร์นั้น',
+      'unique.title': 'การตั้งค่าโค้ดเฉพาะตัว',
+      'unique.condATitle': 'เงื่อนไขเพิ่มเติม A — การใช้ซ้ำภายในชุดเดียวกัน',
+      'unique.condARepeatTitle': 'เติมซ้ำได้ (Can be repeated)',
+      'unique.condARepeatDesc': 'หากผู้ใช้ 1 คนได้รับโค้ดทั้งชุดจากเซ็ตนี้ ผู้ใช้สามารถแลกโค้ดทุกใบได้ และได้รับรางวัลทุกครั้งที่แลก',
+      'unique.condAUnrepeatTitle': 'เติมซ้ำไม่ได้ (Cannot be repeated)',
+      'unique.condAUnrepeatDesc': 'แม้ผู้ใช้จะมีโค้ดจากเซ็ตนี้หลายใบ แต่จะได้รับรางวัลเพียงครั้งเดียว — จากโค้ดใบแรกที่แลกเท่านั้น การแลกครั้งต่อไปจะขึ้นข้อความแจ้งเตือน',
+      'unique.condBTitle': 'เงื่อนไขเพิ่มเติม B — การใช้ซ้ำข้ามชุด',
+      'unique.condBOnceTitle': 'เติมข้ามได้ (Users can use code once per set)',
+      'unique.condBOnceDesc': 'จำนวนการแลกสูงสุดต่อผู้ใช้ = จำนวนชุดทั้งหมด เช่น ถ้ามีชุด A และ B ผู้ใช้จะแลกได้ 1 ครั้งจากชุด A <i>และ</i> อีก 1 ครั้งจากชุด B',
+      'unique.condBNeverTitle': 'เติมข้ามไม่ได้ (Cannot be repeated even across sets)',
+      'unique.condBNeverDesc': 'ใช้ได้เพียงครั้งเดียวจริง ๆ — ผู้ใช้แลกได้เพียง 1 ครั้งจากการสร้างโค้ดรอบนี้ทั้งหมด ไม่ว่าจะมีกี่ชุดก็ตาม',
+      'unique.condBNote': 'เงื่อนไข B ไม่มีผลในกรณีนี้ — เพราะ "ใช้ซ้ำได้" หมายถึงแลกได้ไม่จำกัดภายในชุดอยู่แล้ว จึงไม่มีอะไรให้จำกัดข้ามชุดอีก',
+      'unique.prefixTitle': 'คำนำหน้าโค้ด (ไม่บังคับ)',
+      'unique.prefixLabel': 'คำนำหน้า',
+      'unique.prefixPlaceholder': 'เช่น PREFIX',
+      'unique.prefixHint': 'สูงสุด 6 ตัวอักษร ใช้ได้เฉพาะตัวอักษรและตัวเลข เว้นว่างไว้เพื่อใช้โค้ดตัวอย่างมาตรฐาน',
+      'unique.prefixWarn': '⚠ การขอโค้ดที่มีคำนำหน้าต้องปรึกษา <span class="team-name">ทีมสีเหลือง</span> ก่อนส่งคำขอจริง — แซนด์บ็อกซ์นี้ใช้เพื่อดูตัวอย่างรูปแบบเท่านั้น',
+      'unique.amountTitle': 'จำนวน',
+      'unique.codesPerSetLabel': 'จำนวนโค้ดต่อชุด',
+      'unique.numberOfSetsLabel': 'จำนวนชุด',
+      'unique.totalLabel': 'จำนวนโค้ดทั้งหมดที่จะขอจาก <span class="team-name">ทีมสีเหลือง</span>',
+      'unique.totalHint': 'ไม่สามารถสร้างโค้ดเฉพาะตัวเกิน 10,000 โค้ดต่อคำขอหนึ่งครั้งได้',
+      'unique.atLimit': '⚠ คุณอยู่ที่ขนาดคำขอสูงสุดแล้ว (10,000 โค้ด) — กรุณาติดต่อ <span class="team-name">ทีมสีเหลือง</span> ก่อนหากต้องการมากกว่านี้',
+      'unique.over': '⚠ จำนวนนี้เกินขีดจำกัด 10,000 โค้ด กรุณาติดต่อ <span class="team-name">ทีมสีเหลือง</span> ก่อนหากต้องการคำขอขนาดใหญ่ขนาดนี้',
+      'unique.demoHint': 'แซนด์บ็อกซ์นี้แสดงผลได้สูงสุดเพียง <b>100 โค้ดต่อชุด</b> และ <b>10 ชุด</b> เพื่อประสิทธิภาพในการแสดงผล — ส่วนที่เหลือจะแสดงเป็น "...และอีก XXX รายการ" เพื่อให้ทำงานได้รวดเร็ว แม้ว่าคำขอจริงของคุณจะขอได้สูงสุดถึง 10,000 โค้ดก็ตาม',
+      'master.title': 'การตั้งค่ามาสเตอร์โค้ด',
+      'master.warn': '⚠ ชื่อมาสเตอร์โค้ดต้องไม่ซ้ำกันภายในเซิร์ฟเวอร์เดียวกัน — ครอบคลุมทุกเกมของเซิร์ฟเวอร์นั้น (เช่น ห้ามใช้ชื่อเดียวกันทั้งใน TR และ WARZ) แต่สามารถใช้ชื่อเดียวกันซ้ำได้ในเซิร์ฟเวอร์อื่น (เช่น ใช้ชื่อเดียวกันทั้งใน CB และ HOF ได้) หากชื่อที่คุณต้องการถูกใช้ไปแล้วในเซิร์ฟเวอร์นั้น <span class="team-name">ทีมสีเหลือง</span> จะติดต่อกลับให้เลือกชื่อใหม่',
+      'master.nameLabel': 'ชื่อมาสเตอร์โค้ด',
+      'master.namePlaceholder': 'เช่น CATDOG',
+      'master.nameHint': 'ไม่สนใจตัวพิมพ์เล็ก-ใหญ่เมื่อผู้เล่นแลกโค้ด (CATDOG = catdog = CatDog)',
+      'master.limitTitle': 'ขีดจำกัดการแลก',
+      'master.unlimitedTitle': 'ไม่จำกัด',
+      'master.unlimitedDesc': 'ผู้เล่นกี่คนก็ได้สามารถแลกโค้ดนี้ได้ (คนละ 1 ครั้ง)',
+      'master.limitedTitle': 'จำกัดจำนวน',
+      'master.limitedDesc': 'เฉพาะผู้เล่น N คนแรกที่แลกเท่านั้นที่จะได้รับรางวัล เป็นเพดานรวมที่ทุกคนใช้ร่วมกัน',
+      'master.capLabel': 'เพดานจำนวนการแลก',
+      'shared.title': 'ขั้นตอนที่ 2 — เซิร์ฟเวอร์ เกม และรางวัล',
+      'shared.serverLabel': 'เซิร์ฟเวอร์',
+      'shared.serverHint': 'ใช้เพื่ออ้างอิงในแซนด์บ็อกซ์นี้เท่านั้น — ไม่มีผลบังคับระหว่างการแลกโค้ด',
+      'shared.gameLabel': 'เกม',
+      'shared.gameOtherPlaceholder': 'ระบุชื่อเกม',
+      'shared.rewardLabel': 'รายละเอียดรางวัล',
+      'shared.rewardPlaceholder': 'เช่น HP Potion (Lv.3) x100',
+      'shared.rewardHint': 'ทุกคนที่แลกโค้ดจากการสร้างครั้งนี้สำเร็จจะได้รับรางวัลเดียวกัน ข้อความนี้ใช้เพื่อแสดงผลในแซนด์บ็อกซ์นี้เท่านั้น — ไม่ได้เชื่อมต่อกับระบบรางวัลจริงแต่อย่างใด',
+      'step3.title': 'ขั้นตอนที่ 3 — วันเริ่มต้นและวันหมดอายุ',
+      'step3.startLabel': 'วันที่เริ่มต้น / เปิดใช้งาน',
+      'step3.endLabel': 'วันที่สิ้นสุด / หมดอายุ',
+      'step3.hint1': 'คำขอโค้ดจริงทุกครั้งต้องมีวันเริ่มต้นและวันหมดอายุ — ไม่อนุญาตให้ใช้โค้ดแบบถาวร ฟิลด์เหล่านี้มีไว้สำหรับบันทึกคำขอของคุณเท่านั้น แซนด์บ็อกซ์นี้ไม่ได้บังคับใช้ระหว่างการจำลองการแลกโค้ด',
+      'step3.hint2': 'ต้องการโค้ดที่แทบไม่มีวันหมดอายุใช่ไหม? เราไม่มีตัวเลือก "ถาวร" — แต่ให้ตั้งวันหมดอายุล่วงหน้า 10 ปีแทน แล้วเราจะถือว่าเป็นแบบถาวรในทางปฏิบัติ',
+      'generateBtn': 'สร้างโค้ดจำลอง →',
+      'redeem.noGen': 'ยังไม่มีการสร้างโค้ด กรุณาไปที่แท็บสร้างโค้ดก่อน แล้วกด "สร้างโค้ดจำลอง"',
+      'redeem.playersTitle': 'ผู้เล่นจำลอง',
+      'redeem.addUser': '+ เพิ่มผู้ใช้',
+      'redeem.redeemTitle': 'แลกโค้ด',
+      'redeem.inputPlaceholder': 'พิมพ์โค้ดที่นี่...',
+      'redeem.redeemBtn': 'แลก',
+      'redeem.historyTitle': 'ประวัติการแลกโค้ดของผู้เล่นคนนี้',
+      'redeem.poolTitle': 'กลุ่มโค้ดที่ใช้งานอยู่',
+      'redeem.poolHint': 'คลิกที่โค้ดใดก็ได้เพื่อคัดลอกไปยังคลิปบอร์ด',
+      'footer.note': 'เครื่องมือแซนด์บ็อกซ์ภายใน · โค้ดจำลองเท่านั้น · โค้ดที่สร้างจะรีเซ็ตเมื่อโหลดหน้าใหม่',
+      'theme.light': '☀️ โหมดสว่าง',
+      'theme.dark': '🌙 โหมดมืด',
+      'lang.toggle': '🇬🇧 English',
+      'js.confirmClear': 'ล้างโค้ดที่สร้างไว้ทั้งหมดและผู้เล่นจำลองหรือไม่? การดำเนินการนี้จะรีเซ็ตทุกอย่างกลับเป็นค่าเริ่มต้นและไม่สามารถย้อนกลับได้',
+      'js.dateBothRequired': 'กรุณากำหนดทั้งวันเริ่มต้นและวันหมดอายุ',
+      'js.dateOrder': 'วันหมดอายุต้องอยู่หลังวันเริ่มต้น',
+      'js.minAmount': 'กรุณากรอกจำนวนโค้ดต่อชุดและจำนวนชุดอย่างน้อย 1',
+      'js.overLimit': 'จำนวนที่ขอเกินขีดจำกัด 10,000 โค้ด กรุณาติดต่อทีมสีเหลืองก่อนหากต้องการคำขอขนาดใหญ่ขนาดนี้',
+      'js.prefixTooLong': 'คำนำหน้าต้องไม่เกิน 6 ตัวอักษร',
+      'js.masterNameRequired': 'กรุณากรอกชื่อมาสเตอร์โค้ด',
+      'js.capMin': 'กรุณากรอกเพดานการแลกอย่างน้อย 1',
+      'js.condRepeatable': 'ใช้ซ้ำได้ภายในชุดเดียวกัน',
+      'js.condUnrepeatable': 'ใช้ซ้ำไม่ได้ภายในชุดเดียวกัน',
+      'js.condBNA': 'ไม่มีผล (ไม่จำกัดอยู่แล้วภายในแต่ละชุด)',
+      'js.condBOnce': 'ครั้งเดียวต่อชุด — สูงสุด {n} ครั้งต่อผู้เล่นรวมทั้งหมด',
+      'js.condBNever': 'ใช้ข้ามชุดไม่ได้ — สูงสุด 1 ครั้งต่อผู้เล่นตลอดไปจากการสร้างโค้ดรอบนี้',
+      'js.type': 'ประเภท:',
+      'js.typeUnique': 'โค้ดเฉพาะตัว',
+      'js.typeMaster': 'มาสเตอร์โค้ด',
+      'js.server': 'เซิร์ฟเวอร์:',
+      'js.game': 'เกม:',
+      'js.condA': 'เงื่อนไข A:',
+      'js.condB': 'เงื่อนไข B:',
+      'js.setsLine': '<b>{sets}</b> ชุด × {cps} โค้ด/ชุด = <b>{total}</b> โค้ดที่ขอทั้งหมด',
+      'js.prefix': 'คำนำหน้า:',
+      'js.prefixConsult': '— ปรึกษาทีมสีเหลืองก่อนส่งคำขอโค้ดมีคำนำหน้าจริง',
+      'js.reward': 'รางวัล:',
+      'js.window': 'ช่วงเวลา:',
+      'js.codeName': 'ชื่อโค้ด:',
+      'js.limit': 'ขีดจำกัด:',
+      'js.unlimited': 'ไม่จำกัด',
+      'js.limitedTo': 'จำกัดที่ {cap} ครั้ง (ใช้ไปแล้ว {used}/{cap})',
+      'js.generated': '✅ สร้างสำเร็จ',
+      'js.fakeCodesPool': 'โค้ดจำลอง (กลุ่มตัวอย่าง)',
+      'js.setHeaderRequested': 'ชุดที่ {n} <span class="muted">(ขอไว้ {count} รายการ)</span>',
+      'js.setHeaderUsed': 'ชุดที่ {n} <span class="muted">(ใช้แล้ว {used}/{total})</span>',
+      'js.moreInSet': '...และอีก {n} รายการในชุดนี้',
+      'js.moreInSetHidden': '...และอีก {n} รายการในชุดนี้ (แลกไม่ได้ในตัวอย่างนี้)',
+      'js.moreSets': '...และอีก {n} ชุดที่ไม่ได้แสดงในตัวอย่างนี้',
+      'js.tryItRedeemHint': 'ไปที่แท็บแลกโค้ดแล้วพิมพ์ <code class="pill">{name}</code> เพื่อทดสอบ',
+      'js.goRedeemHint': 'ไปที่แท็บ <b>ตัวจำลองการแลกโค้ด</b> เพื่อทดสอบกับผู้เล่นจำลอง →',
+      'js.typeCodeFirst': 'กรุณาพิมพ์โค้ดก่อน',
+      'js.invalidOrHidden': 'โค้ดไม่ถูกต้อง — อาจไม่มีอยู่จริง หรืออยู่นอกเหนือโค้ด 100 อันดับแรกต่อชุดที่แสดงในตัวอย่างนี้',
+      'js.alreadyRedeemedExact': 'โค้ดนี้ถูกแลกไปแล้ว{byUser}',
+      'js.byUser': ' (โดย {name})',
+      'js.alreadyRedeemedGen': 'คุณได้รับรางวัลจากการสร้างโค้ดรอบนี้ไปแล้ว ชุดโค้ดนี้ไม่สามารถแลกซ้ำโดยผู้เล่นคนเดียวกันได้ แม้จะเป็นคนละชุดก็ตาม',
+      'js.alreadyRedeemedSet': 'คุณได้รับรางวัลจากชุดที่ {n} ไปแล้ว คุณยังสามารถแลกจากชุดอื่นได้ ถ้ามี',
+      'js.success': 'สำเร็จ! {name} ได้รับ: {reward}',
+      'js.invalidCode': 'โค้ดไม่ถูกต้อง',
+      'js.alreadyRedeemedMaster': 'คุณแลกมาสเตอร์โค้ดนี้ไปแล้ว',
+      'js.masterCapReached': 'โค้ดนี้ถึงขีดจำกัดการแลกสูงสุดแล้ว ({cap}/{cap}) ไม่ได้รับรางวัล',
+      'js.userDefaultName': 'ผู้ใช้ {letter}',
+      'js.rename': 'เปลี่ยนชื่อ',
+      'js.removeUser': 'ลบผู้ใช้',
+      'js.activeGen': 'การสร้างโค้ดที่ใช้งานอยู่',
+      'js.noRedemptions': 'ยังไม่มีการแลกโค้ด',
+      'js.thCode': 'โค้ด',
+      'js.thSet': 'ชุด',
+      'js.thReward': 'รางวัล',
+      'js.thTime': 'เวลา',
+      'js.setN': 'ชุดที่ {n}',
+      'js.dash': '—',
+      'js.copiedToast': '✅ คัดลอก "{text}" ไปยังคลิปบอร์ดแล้ว',
+      'js.copiedTitle': 'คัดลอกแล้ว!',
+      'js.usedByClickCopy': 'ใช้แล้วโดย {name} — คลิกเพื่อคัดลอก',
+      'js.clickCopy': 'คลิกเพื่อคัดลอก',
+      'js.redeemed': '{count} / {cap} ที่แลกไปแล้ว',
+      'js.otherOption': 'อื่น ๆ'
+    }
+  };
+
+  function t(key, vars){
+    let str = (I18N[lang] && I18N[lang][key] !== undefined) ? I18N[lang][key] : (I18N.en[key] !== undefined ? I18N.en[key] : key);
+    if(vars){
+      Object.keys(vars).forEach(k=>{
+        str = str.split('{'+k+'}').join(vars[k]);
+      });
+    }
+    // clean up any unused optional tokens (e.g. {byUser} when empty)
+    str = str.replace(/\{[a-zA-Z]+\}/g, '');
+    return str;
+  }
+
+  function applyStaticI18n(){
+    document.documentElement.lang = lang;
+    document.title = t('page.title');
+    document.querySelectorAll('[data-i18n]').forEach(el=>{
+      el.innerHTML = t(el.getAttribute('data-i18n'));
+    });
+    document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
+      el.setAttribute('placeholder', t(el.getAttribute('data-i18n-ph')));
+    });
+    themeToggleBtn.textContent = document.body.classList.contains('light-mode') ? t('theme.dark') : t('theme.light');
+    langToggleBtn.textContent = t('lang.toggle');
+  }
+
+  function refreshDynamicText(){
+    if(currentGeneration && document.getElementById('generatedResult').style.display !== 'none'){
+      renderGeneratedResult();
+    }
+    renderRedeemTab();
+    updateRadioCardStyles();
+    const otherOpt = document.getElementById('gameSelect') && document.querySelector('#gameSelect option[value="Other"]');
+    if(otherOpt) otherOpt.textContent = t('js.otherOption');
+  }
+
+  // ---------------------------------------------------------------
+  // THEME TOGGLE (light / dark)
+  // ---------------------------------------------------------------
+  const themeToggleBtn = document.getElementById('themeToggle');
+  themeToggleBtn.addEventListener('click', ()=>{
+    const isLight = document.body.classList.toggle('light-mode');
+    themeToggleBtn.textContent = isLight ? t('theme.dark') : t('theme.light');
+  });
+
+  // ---------------------------------------------------------------
+  // LANGUAGE TOGGLE (English / Thai)
+  // ---------------------------------------------------------------
+  const langToggleBtn = document.getElementById('langToggle');
+  langToggleBtn.addEventListener('click', ()=>{
+    lang = (lang === 'en') ? 'th' : 'en';
+    applyStaticI18n();
+    refreshDynamicText();
+  });
 
   // ---------------------------------------------------------------
   // TAB NAV
@@ -397,6 +811,7 @@
   const totalBox = document.getElementById('totalBox');
   const totalNum = document.getElementById('totalNum');
   const overText = document.getElementById('overText');
+  const atLimitText = document.getElementById('atLimitText');
 
   function refreshTotal(){
     const cps = Math.max(0, parseInt(codesPerSetInput.value,10) || 0);
@@ -404,13 +819,46 @@
     const total = cps * nos;
     totalNum.textContent = total.toLocaleString();
     const over = total > 10000;
+    const atLimit = total === 10000;
     totalBox.classList.toggle('over', over);
+    totalBox.classList.toggle('atlimit', atLimit);
     overText.style.display = over ? '' : 'none';
+    atLimitText.style.display = atLimit ? '' : 'none';
     return {cps, nos, total, over};
   }
   codesPerSetInput.addEventListener('input', refreshTotal);
   numberOfSetsInput.addEventListener('input', refreshTotal);
   refreshTotal();
+
+  // Prefix field: force uppercase, letters/numbers only, max 6 chars
+  const codePrefixInput = document.getElementById('codePrefix');
+  codePrefixInput.addEventListener('input', ()=>{
+    codePrefixInput.value = codePrefixInput.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6);
+  });
+
+  // Server -> Game cascading dropdown
+  const GAME_OPTIONS = {
+    CB: ['M-TH', 'M-SEA', 'PC-TH', 'PC-SEA', 'Other'],
+    HOF: ['TR', 'WARZ', 'Other']
+  };
+  const serverSelectEl = document.getElementById('serverSelect');
+  const gameSelectEl = document.getElementById('gameSelect');
+  const gameOtherField = document.getElementById('gameOtherField');
+  const gameOtherInput = document.getElementById('gameOtherInput');
+
+  function populateGameSelect(){
+    const options = GAME_OPTIONS[serverSelectEl.value] || [];
+    gameSelectEl.innerHTML = options.map(g => `<option value="${g}">${g === 'Other' ? t('js.otherOption') : g}</option>`).join('');
+    gameSelectEl.selectedIndex = 0;
+    gameOtherField.style.display = 'none';
+    gameOtherInput.value = '';
+  }
+  serverSelectEl.addEventListener('change', populateGameSelect);
+  gameSelectEl.addEventListener('change', ()=>{
+    gameOtherField.style.display = gameSelectEl.value === 'Other' ? '' : 'none';
+    if(gameSelectEl.value !== 'Other') gameOtherInput.value = '';
+  });
+  populateGameSelect();
 
   // Default dates: start = now, end = +7 days
   function toLocalInputValue(d){
@@ -428,6 +876,79 @@
   }
 
   // ---------------------------------------------------------------
+  // CLEAR ALL
+  // ---------------------------------------------------------------
+  function resetAll(){
+    currentGeneration = null;
+    users = [];
+    activeUserId = null;
+
+    // code type
+    document.querySelector('input[name=codeType][value=unique]').checked = true;
+    uniqueForm.style.display = '';
+    masterForm.style.display = 'none';
+
+    // toggle A / B
+    document.querySelector('input[name=toggleA][value=repeatable]').checked = true;
+    document.querySelector('input[name=toggleB][value=oncePerSet]').checked = true;
+    refreshToggleBState();
+
+    // prefix
+    codePrefixInput.value = '';
+
+    // amount
+    codesPerSetInput.value = '100';
+    numberOfSetsInput.value = '1';
+    refreshTotal();
+
+    // master fields
+    document.getElementById('masterName').value = '';
+    document.querySelector('input[name=masterLimit][value=unlimited]').checked = true;
+    document.getElementById('masterCapField').style.display = 'none';
+    document.getElementById('masterCap').value = '100';
+
+    // shared fields
+    serverSelectEl.selectedIndex = 0;
+    populateGameSelect();
+    document.getElementById('rewardDesc').value = '';
+
+    // dates
+    const resetNow = new Date();
+    const resetWeekLater = new Date(resetNow.getTime() + 7*24*3600*1000);
+    document.getElementById('startDate').value = toLocalInputValue(resetNow);
+    document.getElementById('endDate').value = toLocalInputValue(resetWeekLater);
+
+    // errors
+    const genErrorEl = document.getElementById('genError');
+    const dateErrorEl = document.getElementById('dateError');
+    genErrorEl.style.display = 'none';
+    genErrorEl.textContent = '';
+    dateErrorEl.style.display = 'none';
+    dateErrorEl.textContent = '';
+
+    // generated result
+    const resultBox = document.getElementById('generatedResult');
+    resultBox.style.display = 'none';
+    resultBox.innerHTML = '';
+
+    updateRadioCardStyles();
+
+    // jump back to the Generate tab
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.querySelector('.tab-btn[data-tab="generate"]').classList.add('active');
+    document.getElementById('panel-generate').classList.add('active');
+
+    renderRedeemTab();
+  }
+
+  document.getElementById('clearAllBtn').addEventListener('click', ()=>{
+    if(confirm(t('js.confirmClear'))){
+      resetAll();
+    }
+  });
+
+  // ---------------------------------------------------------------
   // GENERATE BUTTON
   // ---------------------------------------------------------------
   document.getElementById('generateBtn').addEventListener('click', ()=>{
@@ -437,18 +958,19 @@
     dateErrorEl.style.display='none';
 
     const type = document.querySelector('input[name=codeType]:checked').value;
-    const server = document.getElementById('serverSelect').value;
+    const server = serverSelectEl.value;
+    const game = gameSelectEl.value === 'Other' ? (gameOtherInput.value.trim() || 'Other') : gameSelectEl.value;
     const reward = document.getElementById('rewardDesc').value.trim() || 'Sample Reward';
     const startVal = document.getElementById('startDate').value;
     const endVal = document.getElementById('endDate').value;
 
     if(!startVal || !endVal){
-      dateErrorEl.textContent = 'Please set both an activation and expiration date.';
+      dateErrorEl.textContent = t('js.dateBothRequired');
       dateErrorEl.style.display='';
       return;
     }
     if(new Date(endVal) <= new Date(startVal)){
-      dateErrorEl.textContent = 'Expiration date must be after the activation date.';
+      dateErrorEl.textContent = t('js.dateOrder');
       dateErrorEl.style.display='';
       return;
     }
@@ -456,12 +978,12 @@
     if(type === 'unique'){
       const {cps, nos, total, over} = refreshTotal();
       if(cps < 1 || nos < 1){
-        genErrorEl.textContent = 'Please enter at least 1 code per set and at least 1 set.';
+        genErrorEl.textContent = t('js.minAmount');
         genErrorEl.style.display='';
         return;
       }
       if(over){
-        genErrorEl.textContent = 'Total requested exceeds the 10,000 code limit. Please lower the amounts.';
+        genErrorEl.textContent = t('js.overLimit');
         genErrorEl.style.display='';
         return;
       }
@@ -474,24 +996,32 @@
       const hiddenSets = Math.max(0, nos - setsToBuild);
       const hiddenPerSet = Math.max(0, cps - codesPerSetShown);
 
+      const prefix = codePrefixInput.value.trim(); // already sanitized: A-Z0-9, max 6 chars
+      if(prefix.length > 6){
+        genErrorEl.textContent = t('js.prefixTooLong');
+        genErrorEl.style.display='';
+        return;
+      }
+
       let counter = 1;
       const sets = [];
       for(let s=0; s<setsToBuild; s++){
         const codes = [];
         for(let c=0; c<codesPerSetShown; c++){
-          codes.push({
-            id: uid('code'),
-            label: 'FAKECODES' + String(counter).padStart(3,'0'),
-            used:false, usedBy:null
-          });
+          // Base fake code is always "FAKECODES001" style (12 chars). If a prefix is set,
+          // overwrite that many leading characters with the prefix, keeping the rest (and the
+          // sequential numbering) intact — so the total length stays 12.
+          const base = 'FAKECODES' + String(counter).padStart(3,'0');
+          const label = prefix ? (prefix + base.slice(prefix.length)) : base;
+          codes.push({ id: uid('code'), label, used:false, usedBy:null });
           counter++;
         }
         sets.push({ setIndex:s, requestedCount:cps, displayedCount:codesPerSetShown, hiddenCount:hiddenPerSet, codes });
       }
 
       currentGeneration = {
-        id: uid('gen'), type:'unique', server, reward,
-        toggleA, toggleB,
+        id: uid('gen'), type:'unique', server, game, reward,
+        toggleA, toggleB, prefix: prefix || null,
         codesPerSet:cps, numberOfSets:nos, totalRequested:total,
         sets, hiddenSets,
         startDate:startVal, endDate:endVal
@@ -499,7 +1029,7 @@
     } else {
       const name = document.getElementById('masterName').value.trim();
       if(!name){
-        genErrorEl.textContent = 'Please enter a master code name.';
+        genErrorEl.textContent = t('js.masterNameRequired');
         genErrorEl.style.display='';
         return;
       }
@@ -508,17 +1038,23 @@
       if(limitType === 'limited'){
         cap = parseInt(document.getElementById('masterCap').value,10) || 0;
         if(cap < 1){
-          genErrorEl.textContent = 'Please enter a redemption cap of at least 1.';
+          genErrorEl.textContent = t('js.capMin');
           genErrorEl.style.display='';
           return;
         }
       }
       currentGeneration = {
-        id: uid('gen'), type:'master', server, reward,
+        id: uid('gen'), type:'master', server, game, reward,
         name, limitType, cap, redeemedCount:0,
         startDate:startVal, endDate:endVal
       };
     }
+
+    // A brand new generation starts a brand new redemption simulation — old
+    // simulated players and their redemption history belonged to the previous
+    // generation and would otherwise linger and clash with the fresh code pool.
+    users = [];
+    activeUserId = null;
 
     renderGeneratedResult();
     document.getElementById('generatedResult').style.display='';
@@ -526,26 +1062,27 @@
 
   function generationSummaryHTML(gen){
     if(gen.type === 'unique'){
-      const aText = gen.toggleA === 'repeatable' ? 'Can be repeated within a set' : 'Cannot be repeated within a set';
-      let bText = 'N/A (unlimited within each set already)';
-      if(gen.toggleB === 'oncePerSet') bText = 'Once per set — max ' + gen.numberOfSets + ' redemptions per player total';
-      if(gen.toggleB === 'noCross') bText = 'Cannot cross sets — max 1 redemption per player, ever, from this generation';
+      const aText = gen.toggleA === 'repeatable' ? t('js.condRepeatable') : t('js.condUnrepeatable');
+      let bText = t('js.condBNA');
+      if(gen.toggleB === 'oncePerSet') bText = t('js.condBOnce', {n: gen.numberOfSets});
+      if(gen.toggleB === 'noCross') bText = t('js.condBNever');
       return `
-        <div class="summary-line"><b>Type:</b> Unique Code &nbsp; <span class="muted">·</span> &nbsp; <b>Server:</b> ${gen.server}</div>
-        <div class="summary-line"><b>Condition A:</b> ${aText}</div>
-        <div class="summary-line"><b>Condition B:</b> ${bText}</div>
-        <div class="summary-line"><b>Sets:</b> ${gen.numberOfSets} × ${gen.codesPerSet} codes/set = <b>${gen.totalRequested.toLocaleString()}</b> total requested</div>
-        <div class="summary-line"><b>Reward:</b> ${escapeHTML(gen.reward)}</div>
-        <div class="summary-line"><b>Window:</b> <span class="muted">${formatDisplayDate(gen.startDate)} → ${formatDisplayDate(gen.endDate)}</span></div>
+        <div class="summary-line"><b>${t('js.type')}</b> ${t('js.typeUnique')} &nbsp; <span class="muted">·</span> &nbsp; <b>${t('js.server')}</b> ${escapeHTML(gen.server)} &nbsp; <span class="muted">·</span> &nbsp; <b>${t('js.game')}</b> ${escapeHTML(gen.game)}</div>
+        <div class="summary-line"><b>${t('js.condA')}</b> ${aText}</div>
+        <div class="summary-line"><b>${t('js.condB')}</b> ${bText}</div>
+        <div class="summary-line">${t('js.setsLine', {sets: gen.numberOfSets, cps: gen.codesPerSet, total: gen.totalRequested.toLocaleString()})}</div>
+        ${gen.prefix ? `<div class="summary-line"><b>${t('js.prefix')}</b> <code class="pill">${escapeHTML(gen.prefix)}</code> <span class="muted">${t('js.prefixConsult')}</span></div>` : ''}
+        <div class="summary-line"><b>${t('js.reward')}</b> ${escapeHTML(gen.reward)}</div>
+        <div class="summary-line"><b>${t('js.window')}</b> <span class="muted">${formatDisplayDate(gen.startDate)} → ${formatDisplayDate(gen.endDate)}</span></div>
       `;
     } else {
-      const limitText = gen.limitType==='unlimited' ? 'Unlimited' : `Limited to ${gen.cap.toLocaleString()} redemptions (${gen.redeemedCount}/${gen.cap} used)`;
+      const limitText = gen.limitType==='unlimited' ? t('js.unlimited') : t('js.limitedTo', {cap: gen.cap.toLocaleString(), used: gen.redeemedCount});
       return `
-        <div class="summary-line"><b>Type:</b> Master Code &nbsp; <span class="muted">·</span> &nbsp; <b>Server:</b> ${gen.server}</div>
-        <div class="summary-line"><b>Code name:</b> <code class="pill">${escapeHTML(gen.name)}</code></div>
-        <div class="summary-line"><b>Limit:</b> ${limitText}</div>
-        <div class="summary-line"><b>Reward:</b> ${escapeHTML(gen.reward)}</div>
-        <div class="summary-line"><b>Window:</b> <span class="muted">${formatDisplayDate(gen.startDate)} → ${formatDisplayDate(gen.endDate)}</span></div>
+        <div class="summary-line"><b>${t('js.type')}</b> ${t('js.typeMaster')} &nbsp; <span class="muted">·</span> &nbsp; <b>${t('js.server')}</b> ${escapeHTML(gen.server)} &nbsp; <span class="muted">·</span> &nbsp; <b>${t('js.game')}</b> ${escapeHTML(gen.game)}</div>
+        <div class="summary-line"><b>${t('js.codeName')}</b> <code class="pill">${escapeHTML(gen.name)}</code></div>
+        <div class="summary-line"><b>${t('js.limit')}</b> ${limitText}</div>
+        <div class="summary-line"><b>${t('js.reward')}</b> ${escapeHTML(gen.reward)}</div>
+        <div class="summary-line"><b>${t('js.window')}</b> <span class="muted">${formatDisplayDate(gen.startDate)} → ${formatDisplayDate(gen.endDate)}</span></div>
       `;
     }
   }
@@ -553,26 +1090,26 @@
   function renderGeneratedResult(){
     const box = document.getElementById('generatedResult');
     const gen = currentGeneration;
-    let html = `<h2>✅ Generated</h2>` + generationSummaryHTML(gen);
+    let html = `<h2>${t('js.generated')}</h2>` + generationSummaryHTML(gen);
 
     if(gen.type === 'unique'){
-      html += `<h3 style="margin-top:14px;">Fake codes (demo pool)</h3>`;
+      html += `<h3 style="margin-top:14px;">${t('js.fakeCodesPool')}</h3>`;
       gen.sets.forEach(set=>{
-        html += `<details class="set-block"${set.setIndex===0?' open':''}><summary>Set ${set.setIndex+1} <span class="muted">(${set.requestedCount} requested)</span></summary><div class="code-chip-row">`;
+        html += `<details class="set-block"${set.setIndex===0?' open':''}><summary>${t('js.setHeaderRequested', {n: set.setIndex+1, count: set.requestedCount})}</summary><div class="code-chip-row">`;
         set.codes.forEach(c=>{
           html += `<span class="code-chip">${c.label}</span>`;
         });
         html += `</div>`;
-        if(set.hiddenCount>0) html += `<div class="more-note">...and ${set.hiddenCount} more in this set</div>`;
+        if(set.hiddenCount>0) html += `<div class="more-note">${t('js.moreInSet', {n: set.hiddenCount})}</div>`;
         html += `</details>`;
       });
       if(gen.hiddenSets>0){
-        html += `<p class="more-note">...and ${gen.hiddenSets} more set${gen.hiddenSets>1?'s':''} not shown in this demo</p>`;
+        html += `<p class="more-note">${t('js.moreSets', {n: gen.hiddenSets})}</p>`;
       }
     } else {
-      html += `<p class="hint" style="margin-top:10px;">Head to the Redemption tab and type <code class="pill">${escapeHTML(gen.name)}</code> to test it.</p>`;
+      html += `<p class="hint" style="margin-top:10px;">${t('js.tryItRedeemHint', {name: escapeHTML(gen.name)})}</p>`;
     }
-    html += `<p class="hint" style="margin-top:14px;">Go to <b>Step 2: Code Redemption Simulator</b> to test this against simulated players →</p>`;
+    html += `<p class="hint" style="margin-top:14px;">${t('js.goRedeemHint')}</p>`;
     box.innerHTML = html;
   }
 
@@ -587,7 +1124,7 @@
   // ---------------------------------------------------------------
   function attemptRedeem(gen, user, rawInput){
     const input = (rawInput||'').trim();
-    if(!input) return {success:false, message:'Please type a code first.'};
+    if(!input) return {success:false, message:t('js.typeCodeFirst')};
 
     if(gen.type === 'unique'){
       let found=null, foundSet=null;
@@ -596,42 +1133,42 @@
         if(c){ found=c; foundSet=set; break; }
       }
       if(!found){
-        return {success:false, message:"Invalid code — either it doesn't exist, or it's beyond the first 100 codes/set shown in this demo."};
+        return {success:false, message:t('js.invalidOrHidden')};
       }
       if(found.used){
-        return {success:false, message:`This exact code has already been redeemed${found.usedBy ? ' (by '+escapeHTML(found.usedBy)+')' : ''}.`};
+        return {success:false, message:t('js.alreadyRedeemedExact', {byUser: found.usedBy ? t('js.byUser',{name:escapeHTML(found.usedBy)}) : ''})};
       }
       const userRedemptionsInGen = user.redemptions.filter(r=>r.generationId===gen.id);
       if(gen.toggleA === 'unrepeatable'){
         if(gen.toggleB === 'noCross'){
           if(userRedemptionsInGen.length>0){
-            return {success:false, message:'You already redeemed a reward from this code generation. This set of codes cannot be redeemed twice by the same player, even across different sets.'};
+            return {success:false, message:t('js.alreadyRedeemedGen')};
           }
         } else { // oncePerSet
           const inThisSet = userRedemptionsInGen.some(r=>r.setIndex===foundSet.setIndex);
           if(inThisSet){
-            return {success:false, message:`You already redeemed a reward from Set ${foundSet.setIndex+1}. You can still redeem from a different set, if one exists.`};
+            return {success:false, message:t('js.alreadyRedeemedSet', {n: foundSet.setIndex+1})};
           }
         }
       }
       found.used = true;
       found.usedBy = user.name;
       user.redemptions.push({generationId:gen.id, setIndex:foundSet.setIndex, codeLabel:found.label, reward:gen.reward, timestamp:Date.now()});
-      return {success:true, message:`Success! ${escapeHTML(user.name)} received: ${escapeHTML(gen.reward)}`};
+      return {success:true, message:t('js.success', {name: escapeHTML(user.name), reward: escapeHTML(gen.reward)})};
     } else {
       if(input.toLowerCase() !== gen.name.trim().toLowerCase()){
-        return {success:false, message:'Invalid code.'};
+        return {success:false, message:t('js.invalidCode')};
       }
       const already = user.redemptions.some(r=>r.generationId===gen.id);
       if(already){
-        return {success:false, message:'You already redeemed this master code.'};
+        return {success:false, message:t('js.alreadyRedeemedMaster')};
       }
       if(gen.limitType==='limited' && gen.redeemedCount >= gen.cap){
-        return {success:false, message:`This code has reached its maximum redemption limit (${gen.cap}/${gen.cap}). No reward given.`};
+        return {success:false, message:t('js.masterCapReached', {cap: gen.cap})};
       }
       gen.redeemedCount++;
       user.redemptions.push({generationId:gen.id, setIndex:null, codeLabel:gen.name, reward:gen.reward, timestamp:Date.now()});
-      return {success:true, message:`Success! ${escapeHTML(user.name)} received: ${escapeHTML(gen.reward)}`};
+      return {success:true, message:t('js.success', {name: escapeHTML(user.name), reward: escapeHTML(gen.reward)})};
     }
   }
 
@@ -640,15 +1177,15 @@
   // ---------------------------------------------------------------
   function ensureFirstUser(){
     if(users.length===0){
-      const u = {id:uid('user'), name:'User A', redemptions:[]};
+      const u = {id:uid('user'), name:t('js.userDefaultName',{letter:'A'}), redemptions:[]};
       users.push(u);
       activeUserId = u.id;
     }
   }
 
   document.getElementById('addUserBtn').addEventListener('click', ()=>{
-    const letter = String.fromCharCode(65 + (users.length % 26));
-    const u = {id:uid('user'), name:'User '+letter+(users.length>=26?('_'+users.length):''), redemptions:[]};
+    const letter = String.fromCharCode(65 + (users.length % 26)) + (users.length>=26?('_'+users.length):'');
+    const u = {id:uid('user'), name:t('js.userDefaultName',{letter}), redemptions:[]};
     users.push(u);
     activeUserId = u.id;
     renderRedeemTab();
@@ -669,7 +1206,7 @@
       const editBtn = document.createElement('button');
       editBtn.className = 'edit-btn';
       editBtn.textContent = '✎';
-      editBtn.title = 'Rename';
+      editBtn.title = t('js.rename');
       editBtn.addEventListener('click', (e)=>{
         e.stopPropagation();
         const input = document.createElement('input');
@@ -693,7 +1230,7 @@
       const x = document.createElement('button');
       x.className = 'x';
       x.textContent = '✕';
-      x.title = 'Remove user';
+      x.title = t('js.removeUser');
       x.addEventListener('click', (e)=>{
         e.stopPropagation();
         if(users.length===1) return; // keep at least one
@@ -710,50 +1247,106 @@
 
   function renderActiveGenSummary(){
     document.getElementById('activeGenSummary').innerHTML =
-      `<h2>Active generation</h2>` + generationSummaryHTML(currentGeneration);
+      `<h2>${t('js.activeGen')}</h2>` + generationSummaryHTML(currentGeneration);
   }
 
   function renderUserHistory(user){
     const el = document.getElementById('userHistory');
     if(user.redemptions.length===0){
-      el.innerHTML = '<p class="empty-state">No redemptions yet.</p>';
+      el.innerHTML = `<p class="empty-state">${t('js.noRedemptions')}</p>`;
       return;
     }
-    let html = '<table><thead><tr><th>Code</th><th>Set</th><th>Reward</th><th>Time</th></tr></thead><tbody>';
+    let html = `<table><thead><tr><th>${t('js.thCode')}</th><th>${t('js.thSet')}</th><th>${t('js.thReward')}</th><th>${t('js.thTime')}</th></tr></thead><tbody>`;
     user.redemptions.slice().reverse().forEach(r=>{
-      html += `<tr><td><code class="pill">${escapeHTML(r.codeLabel)}</code></td><td>${r.setIndex!==null && r.setIndex!==undefined ? 'Set '+(r.setIndex+1) : '—'}</td><td>${escapeHTML(r.reward)}</td><td>${new Date(r.timestamp).toLocaleTimeString()}</td></tr>`;
+      html += `<tr><td><code class="pill">${escapeHTML(r.codeLabel)}</code></td><td>${r.setIndex!==null && r.setIndex!==undefined ? t('js.setN',{n:r.setIndex+1}) : t('js.dash')}</td><td>${escapeHTML(r.reward)}</td><td>${new Date(r.timestamp).toLocaleTimeString()}</td></tr>`;
     });
     html += '</tbody></table>';
     el.innerHTML = html;
   }
 
+  // ---------------------------------------------------------------
+  // COPY-TO-CLIPBOARD (code pool chips + master code name)
+  // ---------------------------------------------------------------
+  function fallbackCopy(text){
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.top = '-1000px';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try{ document.execCommand('copy'); }catch(err){ /* no-op */ }
+    document.body.removeChild(ta);
+  }
+
+  let copyToastTimer = null;
+  function showCopyToast(text){
+    const toast = document.getElementById('copyToast');
+    toast.textContent = t('js.copiedToast', {text});
+    toast.classList.add('show');
+    clearTimeout(copyToastTimer);
+    copyToastTimer = setTimeout(()=>{ toast.classList.remove('show'); }, 1600);
+  }
+
+  function copyCodeToClipboard(el){
+    const text = el.dataset.copy || el.textContent;
+    const flash = ()=>{
+      const originalTitle = el.getAttribute('title') || '';
+      el.classList.add('copied');
+      el.setAttribute('title', t('js.copiedTitle'));
+      setTimeout(()=>{
+        el.classList.remove('copied');
+        el.setAttribute('title', originalTitle);
+      }, 900);
+      showCopyToast(text);
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(flash).catch(()=>{ fallbackCopy(text); flash(); });
+    } else {
+      fallbackCopy(text);
+      flash();
+    }
+  }
+
+  document.getElementById('codePool').addEventListener('click', (e)=>{
+    const el = e.target.closest('.copyable-code');
+    if(!el) return;
+    copyCodeToClipboard(el);
+  });
+
   function renderCodePool(){
     const el = document.getElementById('codePool');
     const gen = currentGeneration;
+    const isNewGen = lastRenderedGenId !== gen.id;
+    lastRenderedGenId = gen.id;
     if(gen.type === 'unique'){
-      // remember which sets are currently expanded so re-rendering (e.g. after a redemption) doesn't collapse them
+      // remember which sets are currently expanded so re-rendering (e.g. after a redemption) doesn't collapse them —
+      // but only within the SAME generation; a freshly generated set should always start collapsed to Set 1 only.
       const openIndexes = new Set();
-      el.querySelectorAll('details.set-block').forEach((d,i)=>{ if(d.open) openIndexes.add(i); });
-      const isFirstRender = el.querySelectorAll('details.set-block').length === 0;
+      if(!isNewGen){
+        el.querySelectorAll('details.set-block').forEach((d,i)=>{ if(d.open) openIndexes.add(i); });
+      }
+      const isFirstRender = isNewGen || el.querySelectorAll('details.set-block').length === 0;
 
       let html = '';
       gen.sets.forEach(set=>{
         const usedCount = set.codes.filter(c=>c.used).length;
         const shouldOpen = isFirstRender ? set.setIndex===0 : openIndexes.has(set.setIndex);
-        html += `<details class="set-block"${shouldOpen?' open':''}><summary>Set ${set.setIndex+1} <span class="muted">(${usedCount}/${set.codes.length} used)</span></summary><div class="code-chip-row">`;
+        html += `<details class="set-block"${shouldOpen?' open':''}><summary>${t('js.setHeaderUsed',{n:set.setIndex+1, used:usedCount, total:set.codes.length})}</summary><div class="code-chip-row">`;
         set.codes.forEach(c=>{
-          html += `<span class="code-chip ${c.used?'used':''}" title="${c.used ? 'Used by '+escapeHTML(c.usedBy) : 'Available'}">${c.label}</span>`;
+          html += `<span class="code-chip copyable-code ${c.used?'used':''}" data-copy="${escapeHTML(c.label)}" title="${c.used ? t('js.usedByClickCopy',{name:escapeHTML(c.usedBy)}) : t('js.clickCopy')}">${c.label}</span>`;
         });
         html += `</div>`;
-        if(set.hiddenCount>0) html += `<div class="more-note">...and ${set.hiddenCount} more in this set (not redeemable in this demo)</div>`;
+        if(set.hiddenCount>0) html += `<div class="more-note">${t('js.moreInSetHidden',{n:set.hiddenCount})}</div>`;
         html += `</details>`;
       });
-      if(gen.hiddenSets>0) html += `<p class="more-note">...and ${gen.hiddenSets} more set(s) not shown in this demo</p>`;
+      if(gen.hiddenSets>0) html += `<p class="more-note">${t('js.moreSets',{n:gen.hiddenSets})}</p>`;
       el.innerHTML = html;
     } else {
-      const limitText = gen.limitType==='unlimited' ? 'Unlimited' : `${gen.redeemedCount} / ${gen.cap} redeemed`;
+      const limitText = gen.limitType==='unlimited' ? t('js.unlimited') : t('js.redeemed',{count:gen.redeemedCount, cap:gen.cap});
       el.innerHTML = `
-        <div class="summary-line"><span class="status-dot ${gen.limitType==='limited' && gen.redeemedCount>=gen.cap ? 'status-used':'status-available'}"></span><b>${escapeHTML(gen.name)}</b></div>
+        <div class="summary-line"><span class="status-dot ${gen.limitType==='limited' && gen.redeemedCount>=gen.cap ? 'status-used':'status-available'}"></span><b class="copyable-code" data-copy="${escapeHTML(gen.name)}" title="${t('js.clickCopy')}">${escapeHTML(gen.name)}</b></div>
         <div class="summary-line">${limitText}</div>
       `;
     }
@@ -798,6 +1391,11 @@
     renderUserTabs();
     renderActiveGenSummary();
   }
+
+  // ---------------------------------------------------------------
+  // INIT
+  // ---------------------------------------------------------------
+  applyStaticI18n();
 
 })();
 </script>
