@@ -163,9 +163,8 @@
   <div class="modal-card">
     <h2 data-i18n="captcha.title">Quick check before export</h2>
     <p class="hint" data-i18n="captcha.desc">Please confirm you're human before exporting to Excel.</p>
-    <!-- TEST KEY: replace data-sitekey below with your own from google.com/recaptcha/admin before sharing this page -->
     <div class="g-recaptcha" style="margin:14px 0;display:flex;justify-content:center;"
-         data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+         data-sitekey="6LclLFwtAAAAADb1biFoCO8MGidEyv0ivDbXR5C2"
          data-callback="csRecaptchaExportOk" data-expired-callback="csRecaptchaExportExpired"></div>
     <div class="modal-btn-row">
       <button class="btn secondary" id="exportCaptchaCancelBtn" type="button" data-i18n="captcha.cancel">Cancel</button>
@@ -174,10 +173,6 @@
   </div>
 </div>
 <script>
-  // NOTE: the data-sitekey above is Google's public TEST key — it always
-  // passes and provides ZERO real bot protection. Before sharing this page,
-  // swap it for your own free site key from google.com/recaptcha/admin
-  // (registered to your github.io URL). Search this file for "TEST KEY".
   let csExportCaptchaSolved = false;
   let csExportConfirmCallback = null;
 
