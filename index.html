@@ -144,9 +144,79 @@
   .empty-state{color:var(--muted);font-size:13.5px;padding:20px;text-align:center;}
   .flex-between{display:flex;justify-content:space-between;align-items:center;}
   footer.note{margin-top:24px;color:var(--muted);font-size:12px;text-align:center;}
+
+  html.cs-locked body{overflow:hidden;}
+  html.cs-locked .wrap{display:none;}
+  .auth-gate{display:none;}
+  html.cs-locked .auth-gate{
+    display:flex;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;
+    background:var(--bg);padding:20px;
+  }
+  .auth-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+    padding:28px 26px;max-width:360px;width:100%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.35);}
+  .auth-card .auth-icon{font-size:30px;margin-bottom:8px;}
+  .auth-card h2{font-size:17px;margin:0 0 6px;}
+  .auth-card .hint{margin-bottom:16px;}
+  .auth-card input[type=password]{margin-bottom:10px;text-align:center;letter-spacing:.05em;}
+  .auth-card .btn{width:100%;margin-bottom:10px;}
+  .auth-error{background:rgba(240,99,122,.1);border:1px solid var(--red);color:var(--red-text);
+    font-size:12.5px;padding:8px 10px;border-radius:8px;margin-bottom:10px;}
 </style>
 </head>
 <body>
+<script>
+  // Password gate — runs immediately (before the rest of the page renders)
+  // so an unauthenticated visitor never sees a flash of the real content.
+  const CS_AUTH_HASH = "18cf13ff6d3390ef46c963ec2766ef7e173921c51a74bda070a7ba611b8124fa";
+  if(localStorage.getItem('cs_auth_hash') !== CS_AUTH_HASH){
+    document.documentElement.classList.add('cs-locked');
+  }
+</script>
+
+<div id="authGate" class="auth-gate">
+  <div class="auth-card">
+    <div class="auth-icon">🔒</div>
+    <h2 data-i18n="auth.title">Restricted Access</h2>
+    <p class="hint" data-i18n="auth.desc">This is an internal Yellow Team tool. Enter the password to continue.</p>
+    <input type="password" id="authPassInput" autocomplete="current-password" data-i18n-ph="auth.placeholder" placeholder="Password">
+    <div id="authError" class="auth-error" data-i18n="auth.error" style="display:none;">Incorrect password. Try again.</div>
+    <button class="btn" id="authSubmitBtn" type="button" data-i18n="auth.submit">Unlock</button>
+    <p class="hint" data-i18n="auth.rememberHint">This browser will remember you — you won't be asked again on this device.</p>
+    <p class="hint" data-i18n="auth.forgotHint">If you lost the password, please contact GP : Aum (Yellow Team).</p>
+  </div>
+</div>
+<script>
+  (function(){
+    function csHashHex(str){
+      return crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)).then(function(buf){
+        return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+      });
+    }
+    function csTryAuth(){
+      const input = document.getElementById('authPassInput');
+      const errBox = document.getElementById('authError');
+      csHashHex(input.value).then(function(hash){
+        if(hash === CS_AUTH_HASH){
+          localStorage.setItem('cs_auth_hash', CS_AUTH_HASH);
+          errBox.style.display = 'none';
+          document.documentElement.classList.remove('cs-locked');
+        } else {
+          errBox.style.display = 'block';
+          input.value = '';
+          input.focus();
+        }
+      });
+    }
+    document.getElementById('authSubmitBtn').addEventListener('click', csTryAuth);
+    document.getElementById('authPassInput').addEventListener('keydown', function(e){
+      if(e.key === 'Enter'){ e.preventDefault(); csTryAuth(); }
+    });
+    if(document.documentElement.classList.contains('cs-locked')){
+      document.getElementById('authPassInput').focus();
+    }
+  })();
+</script>
+
 <div class="wrap">
 
   <header class="top">
@@ -685,9 +755,17 @@
       'theme.light': '☀️ Light mode',
       'theme.dark': '🌙 Dark mode',
       'lang.toggle': 'TH ไทย',
+      'auth.title': 'Restricted Access',
+      'auth.desc': 'This is an internal Yellow Team tool. Enter the password to continue.',
+      'auth.placeholder': 'Password',
+      'auth.error': 'Incorrect password. Try again.',
+      'auth.submit': 'Unlock',
+      'auth.rememberHint': "This browser will remember you — you won't be asked again on this device.",
+      'auth.forgotHint': 'If you lost the password, please contact GP : Aum (Yellow Team).',
       'js.confirmClear': 'Clear all generated codes and simulated players? This resets everything back to the defaults and cannot be undone.',
       'js.dateBothRequired': 'Please set both an activation and expiration date.',
       'js.dateOrder': 'Expiration date must be after the activation date.',
+      'js.dateExpiredPast': 'Expiration date is in the past — please pick a date in the future.',
       'js.minAmount': 'Please enter at least 1 code per set and at least 1 set.',
       'js.overLimit': 'Total requested exceeds the 10,000 code limit. Please contact Yellow Team first if you need a request this large.',
       'js.prefixTooLong': 'Prefix can\'t be longer than 6 characters.',
@@ -835,9 +913,17 @@
       'theme.light': '☀️ โหมดสว่าง',
       'theme.dark': '🌙 โหมดมืด',
       'lang.toggle': 'EN English',
+      'auth.title': 'จำกัดสิทธิ์การเข้าถึง',
+      'auth.desc': 'เครื่องมือนี้ใช้ภายในทีมสีเหลืองเท่านั้น กรุณากรอกรหัสผ่านเพื่อดำเนินการต่อ',
+      'auth.placeholder': 'รหัสผ่าน',
+      'auth.error': 'รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่',
+      'auth.submit': 'ปลดล็อก',
+      'auth.rememberHint': 'เบราว์เซอร์นี้จะจดจำคุณไว้ — จะไม่ถามซ้ำอีกบนอุปกรณ์นี้',
+      'auth.forgotHint': 'หากลืมรหัสผ่าน กรุณาติดต่อ GP : Aum (ทีมสีเหลือง)',
       'js.confirmClear': 'ล้างโค้ดที่สร้างไว้ทั้งหมดและผู้เล่นจำลองหรือไม่? การดำเนินการนี้จะรีเซ็ตทุกอย่างกลับเป็นค่าเริ่มต้นและไม่สามารถย้อนกลับได้',
       'js.dateBothRequired': 'กรุณากำหนดทั้งวันเริ่มต้นและวันหมดอายุ',
       'js.dateOrder': 'วันหมดอายุต้องอยู่หลังวันเริ่มต้น',
+      'js.dateExpiredPast': 'วันหมดอายุเป็นวันที่ผ่านมาแล้ว — กรุณาเลือกวันที่ในอนาคต',
       'js.minAmount': 'กรุณากรอกจำนวนโค้ดต่อชุดและจำนวนชุดอย่างน้อย 1',
       'js.overLimit': 'จำนวนที่ขอเกินขีดจำกัด 10,000 โค้ด กรุณาติดต่อทีมสีเหลืองก่อนหากต้องการคำขอขนาดใหญ่ขนาดนี้',
       'js.prefixTooLong': 'คำนำหน้าต้องไม่เกิน 6 ตัวอักษร',
@@ -1188,6 +1274,11 @@
     }
     if(new Date(endVal) <= new Date(startVal)){
       dateErrorEl.textContent = t('js.dateOrder');
+      dateErrorEl.style.display='';
+      return;
+    }
+    if(new Date(endVal) < new Date()){
+      dateErrorEl.textContent = t('js.dateExpiredPast');
       dateErrorEl.style.display='';
       return;
     }
