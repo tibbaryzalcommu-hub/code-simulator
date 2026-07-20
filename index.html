@@ -750,6 +750,7 @@
       'js.confirmClear': 'Clear all generated codes and simulated players? This resets everything back to the defaults and cannot be undone.',
       'js.dateBothRequired': 'Please set both an activation and expiration date.',
       'js.dateOrder': 'Expiration date must be after the activation date.',
+      'js.dateSame': 'Activation and expiration dates can\'t be the same — please pick a later expiration date.',
       'js.dateExpiredPast': 'Expiration date is in the past — please pick a date in the future.',
       'captcha.title': 'Quick check before export',
       'captcha.desc': 'Please confirm you\'re human before exporting to Excel.',
@@ -905,6 +906,7 @@
       'js.confirmClear': 'ล้างโค้ดที่สร้างไว้ทั้งหมดและผู้เล่นจำลองหรือไม่? การดำเนินการนี้จะรีเซ็ตทุกอย่างกลับเป็นค่าเริ่มต้นและไม่สามารถย้อนกลับได้',
       'js.dateBothRequired': 'กรุณากำหนดทั้งวันเริ่มต้นและวันหมดอายุ',
       'js.dateOrder': 'วันหมดอายุต้องอยู่หลังวันเริ่มต้น',
+      'js.dateSame': 'วันเริ่มต้นและวันหมดอายุต้องไม่ใช่วันเดียวกัน — กรุณาเลือกวันหมดอายุที่หลังกว่านี้',
       'js.dateExpiredPast': 'วันหมดอายุเป็นวันที่ผ่านมาแล้ว — กรุณาเลือกวันที่ในอนาคต',
       'captcha.title': 'ตรวจสอบก่อนส่งออกข้อมูล',
       'captcha.desc': 'กรุณายืนยันว่าคุณเป็นมนุษย์ก่อนส่งออกไฟล์ Excel',
@@ -1258,7 +1260,12 @@
       dateErrorEl.style.display='';
       return;
     }
-    if(new Date(endVal) <= new Date(startVal)){
+    if(new Date(endVal).getTime() === new Date(startVal).getTime()){
+      dateErrorEl.textContent = t('js.dateSame');
+      dateErrorEl.style.display='';
+      return;
+    }
+    if(new Date(endVal) < new Date(startVal)){
       dateErrorEl.textContent = t('js.dateOrder');
       dateErrorEl.style.display='';
       return;
