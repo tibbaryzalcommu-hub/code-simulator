@@ -1012,6 +1012,28 @@
     updateRadioCardStyles();
     const otherOpt = document.getElementById('gameSelect') && document.querySelector('#gameSelect option[value="Other"]');
     if(otherOpt) otherOpt.textContent = t('js.otherOption');
+
+    // Re-translate any currently-visible inline error/warning messages so they
+    // don't stay stuck in whatever language they were first shown in.
+    document.querySelectorAll('[data-i18n-key]').forEach(el=>{
+      if(el.style.display !== 'none'){
+        el.textContent = t(el.dataset.i18nKey);
+      }
+    });
+  }
+
+  // Shows an inline error/warning element with a translated message, and
+  // remembers which key it's showing so refreshDynamicText() can re-translate
+  // it if the user switches language while it's still on screen.
+  function setFieldError(el, key){
+    el.dataset.i18nKey = key;
+    el.textContent = t(key);
+    el.style.display = '';
+  }
+  function clearFieldError(el){
+    delete el.dataset.i18nKey;
+    el.textContent = '';
+    el.style.display = 'none';
   }
 
   // ---------------------------------------------------------------
@@ -1212,10 +1234,8 @@
     // errors
     const genErrorEl = document.getElementById('genError');
     const dateErrorEl = document.getElementById('dateError');
-    genErrorEl.style.display = 'none';
-    genErrorEl.textContent = '';
-    dateErrorEl.style.display = 'none';
-    dateErrorEl.textContent = '';
+    clearFieldError(genErrorEl);
+    clearFieldError(dateErrorEl);
 
     // generated result
     const resultBox = document.getElementById('generatedResult');
@@ -1245,8 +1265,8 @@
   document.getElementById('generateBtn').addEventListener('click', ()=>{
     const genErrorEl = document.getElementById('genError');
     const dateErrorEl = document.getElementById('dateError');
-    genErrorEl.style.display='none';
-    dateErrorEl.style.display='none';
+    clearFieldError(genErrorEl);
+    clearFieldError(dateErrorEl);
 
     const type = document.querySelector('input[name=codeType]:checked').value;
     const server = serverSelectEl.value;
@@ -1256,36 +1276,30 @@
     const endVal = document.getElementById('endDate').value;
 
     if(!startVal || !endVal){
-      dateErrorEl.textContent = t('js.dateBothRequired');
-      dateErrorEl.style.display='';
+      setFieldError(dateErrorEl, 'js.dateBothRequired');
       return;
     }
     if(new Date(endVal).getTime() === new Date(startVal).getTime()){
-      dateErrorEl.textContent = t('js.dateSame');
-      dateErrorEl.style.display='';
+      setFieldError(dateErrorEl, 'js.dateSame');
       return;
     }
     if(new Date(endVal) < new Date(startVal)){
-      dateErrorEl.textContent = t('js.dateOrder');
-      dateErrorEl.style.display='';
+      setFieldError(dateErrorEl, 'js.dateOrder');
       return;
     }
     if(new Date(endVal) < new Date()){
-      dateErrorEl.textContent = t('js.dateExpiredPast');
-      dateErrorEl.style.display='';
+      setFieldError(dateErrorEl, 'js.dateExpiredPast');
       return;
     }
 
     if(type === 'unique'){
       const {cps, nos, total, over} = refreshTotal();
       if(cps < 1 || nos < 1){
-        genErrorEl.textContent = t('js.minAmount');
-        genErrorEl.style.display='';
+        setFieldError(genErrorEl, 'js.minAmount');
         return;
       }
       if(over){
-        genErrorEl.textContent = t('js.overLimit');
-        genErrorEl.style.display='';
+        setFieldError(genErrorEl, 'js.overLimit');
         return;
       }
       const toggleA = document.querySelector('input[name=toggleA]:checked').value;
@@ -1299,8 +1313,7 @@
 
       const prefix = codePrefixInput.value.trim(); // already sanitized: A-Z0-9, max 6 chars
       if(prefix.length > 6){
-        genErrorEl.textContent = t('js.prefixTooLong');
-        genErrorEl.style.display='';
+        setFieldError(genErrorEl, 'js.prefixTooLong');
         return;
       }
 
@@ -1330,8 +1343,7 @@
     } else {
       const name = document.getElementById('masterName').value.trim();
       if(!name){
-        genErrorEl.textContent = t('js.masterNameRequired');
-        genErrorEl.style.display='';
+        setFieldError(genErrorEl, 'js.masterNameRequired');
         return;
       }
       const limitType = document.querySelector('input[name=masterLimit]:checked').value;
@@ -1339,8 +1351,7 @@
       if(limitType === 'limited'){
         cap = parseInt(document.getElementById('masterCap').value,10) || 0;
         if(cap < 1){
-          genErrorEl.textContent = t('js.capMin');
-          genErrorEl.style.display='';
+          setFieldError(genErrorEl, 'js.capMin');
           return;
         }
       }
